@@ -1,0 +1,4 @@
+Id,Name,Speed,Hp,Crash safety rated,Created at
+1,Ferrari,235,630,true,2014-08-23T20:59:34.000Z
+2,Lamborghini,245,720,true,2014-08-24T20:59:34.000Z
+3,Bugatti,256,1001,false,2014-08-25T20:59:34.000Z
