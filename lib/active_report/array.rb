@@ -21,16 +21,14 @@ class ActiveReport::Array
 
     CSV.generate(@options) do |csv|
       csv << @headers unless @headers.nil?
-      @datum.each { |data| csv << data }
+      @datum.lazy.each { |d| csv << d }
     end
   end
 
   def import
     processed_datum = [].push(@headers).compact
-    CSV.foreach(@datum, @options) do |data|
-      processed_datum.push(data)
-    end
-    return(processed_datum.size < 2 ? processed_datum.flatten : processed_datum)
+    CSV.foreach(@datum, @options) { |d| processed_datum.push(d) }
+    processed_datum.size < 2 ? processed_datum.flatten : processed_datum
   end
 
 end

@@ -26,9 +26,9 @@ class ActiveReport::Hash
     CSV.generate(@options) do |csv|
       header = @datum.first.only(@only)     unless @only.empty?
       header = @datum.first.except(@except) unless @except.empty?
-      csv << (@headers || (header || @datum.first).keys.map { |k| k.to_s.gsub("_", " ").capitalize })
+      csv << (@headers || (header || @datum.first).keys.map { |k| k.to_s.gsub('_'.freeze, ' '.freeze).capitalize })
 
-      @datum.each do |data|
+      @datum.lazy.each do |data|
         cell = data.only(@only)     unless @only.empty?
         cell = data.except(@except) unless @except.empty?
         csv << (cell || data).values
@@ -41,14 +41,12 @@ class ActiveReport::Hash
     @except = [].push(@except).compact unless @except.is_a?(Array)
 
     processed_datum = []
-    CSV.foreach(@datum, @options).each_with_index do |data, line|
+    CSV.foreach(@datum, @options).lazy.each_with_index do |data, line|
       if @headers.nil? && line.zero?
         @headers = data
       else
         processed_data = {}
-        @headers.each_with_index do |v, i|
-          processed_data.store(v.to_s, data.fetch(i, nil) )
-        end
+        @headers.lazy.each_with_index { |v, i| processed_data.store(v.to_s, data.fetch(i, nil)) }
 
         processed_data.only!(@only)     unless @only.empty?
         processed_data.except!(@except) unless @except.empty?

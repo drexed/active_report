@@ -1,4 +1,4 @@
-require "json"
+require 'json'
 class ActiveReport::Record
 
   attr_accessor :datum, :model, :only, :except, :headers, :options
@@ -28,9 +28,9 @@ class ActiveReport::Record
     CSV.generate(@options) do |csv|
       header = @datum.first.only(@only)     unless @only.empty?
       header = @datum.first.except(@except) unless @except.empty?
-      csv << (@headers || (header || @datum.first).keys.map { |k| k.to_s.gsub("_", " ").capitalize })
+      csv << (@headers || (header || @datum.first).keys.map { |k| k.to_s.gsub('_'.freeze, ' '.freeze).capitalize })
 
-      @datum.each do |data|
+      @datum.lazy.each do |data|
         cell = data.only(@only)     unless @only.empty?
         cell = data.except(@except) unless @except.empty?
         csv << (cell || data).values
@@ -41,19 +41,19 @@ class ActiveReport::Record
   def import
     if @model.nil? || (@model.superclass != ActiveRecord::Base)
       raise ArgumentError,
-        "Model must be an ActiveRecord::Base object."
+        "Model must be an ActiveRecord::Base object.".freeze
     end
 
     @only   = [].push(@only).compact   unless @only.is_a?(Array)
     @except = [].push(@except).compact unless @except.is_a?(Array)
 
     @datum = ActiveReport::Hash.import(@datum, headers: @headers, options: @options)
-    @datum.each do |data|
-      data.transform_keys! { |k| k.to_s.downcase.gsub(" ", "_").to_sym }
-      data.except!(:id)
+    @datum.lazy.each do |data|
+      data.transform_keys! { |k| k.to_s.downcase.gsub(' '.freeze, '_'.freeze).to_sym }
 
       data.only!(@only)     unless @only.empty?
       data.except!(@except) unless @except.empty?
+      data.except!(:id)
 
       @model.create(data)
     end
