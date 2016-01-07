@@ -1,4 +1,4 @@
-class ActiveReport::Hash
+class ActiveReport::Hash < ActiveReport::Base
 
   attr_accessor :datum, :only, :except, :headers, :options
 
@@ -41,7 +41,9 @@ class ActiveReport::Hash
     @except = [].push(@except).compact unless @except.is_a?(Array)
 
     processed_datum = []
-    CSV.foreach(@datum, @options).lazy.each_with_index do |data, line|
+    CSV.foreach(@datum, @options, encoding: "iso-8859-1:UTF-8").lazy.each_with_index do |data, line|
+      data = encode_to_utf8(data)
+
       if @headers.nil? && line.zero?
         @headers = data
       else

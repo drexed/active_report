@@ -1,4 +1,4 @@
-class ActiveReport::Array
+class ActiveReport::Array < ActiveReport::Base
 
   attr_accessor :datum, :headers, :options
 
@@ -27,7 +27,7 @@ class ActiveReport::Array
 
   def import
     processed_datum = [].push(@headers).compact
-    CSV.foreach(@datum, @options) { |d| processed_datum.push(d) }
+    CSV.foreach(@datum, @options, encoding: "iso-8859-1:UTF-8") { |d| processed_datum.push(encode_to_utf8(d)) }
     processed_datum.size < 2 ? processed_datum.flatten : processed_datum
   end
 

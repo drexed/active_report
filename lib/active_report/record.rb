@@ -41,7 +41,7 @@ class ActiveReport::Record
   def import
     if @model.nil? || (@model.superclass != ActiveRecord::Base)
       raise ArgumentError,
-        "Model must be an ActiveRecord::Base object.".freeze
+        'Model must be an ActiveRecord::Base object.'.freeze
     end
 
     @only   = [].push(@only).compact   unless @only.is_a?(Array)
