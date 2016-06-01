@@ -2,7 +2,7 @@
 
 [![Gem Version](https://badge.fury.io/rb/active_report.svg)](http://badge.fury.io/rb/active_report)
 [![Build Status](https://travis-ci.org/drexed/active_report.svg?branch=master)](https://travis-ci.org/drexed/active_report)
-[![Coverage Status](https://coveralls.io/repos/drexed/active_report/badge.png)](https://coveralls.io/r/drexed/active_report)
+[![Coverage Status](https://coveralls.io/repos/github/drexed/active_report/badge.svg?branch=master)](https://coveralls.io/github/drexed/active_report?branch=master)
 
 ActiveReport is a library to export CSV's out of arrays, hashes, and records and vice versa.
 
@@ -11,7 +11,7 @@ ActiveReport is a library to export CSV's out of arrays, hashes, and records and
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'active_report'
+gem "active_report"
 ```
 
 And then execute:
@@ -24,9 +24,25 @@ Or install it yourself as:
 
 ## Table of Contents
 
+* [Configuration](#configuration)
 * [Array](#array)
 * [Hash](#hash)
 * [Record](#record)
+
+## Configuration
+
+`rails g active_report:install` will generate the following `active_report.rb` file:
+
+```ruby
+# config/initalizers/active_report.rb
+
+ActiveReport.configure do |config|
+  # option = default
+
+  config.force_encoding = true
+  config.options = { encoding: "UTF-8" }
+end
+```
 
 ## Array
 
@@ -129,8 +145,10 @@ ActiveReport::Record.import("sample.csv", model: User, except: :completed, heade
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/active_report/fork )
+Your contribution is welcome.
+
+1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
+3. Commit your changes (`git commit -am 'Added some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
+5. Create new Pull Request

@@ -1,5 +1,4 @@
 ActiveRecord::Schema.define(version: 1) do
-
   create_table :cars, force: :cascade do |t|
     t.string  :name
     t.integer :speed
@@ -7,5 +6,4 @@ ActiveRecord::Schema.define(version: 1) do
     t.boolean :crash_safety_rated
     t.string  :created_at
   end
-
 end

@@ -3,11 +3,8 @@ class ActiveReport::Hash < ActiveReport::Base
   attr_accessor :datum, :only, :except, :headers, :options
 
   def initialize(datum, only: nil, except: nil, headers: nil, options: {})
-    @datum   = datum
-    @only    = only
-    @except  = except
-    @headers = headers
-    @options = options
+    @datum, @except, @headers, @only = datum, except, headers, only
+    @options = duplicate_options.merge!(options)
   end
 
   def self.export(datum, only: nil, except: nil, headers: nil, options: {})
@@ -19,44 +16,33 @@ class ActiveReport::Hash < ActiveReport::Base
   end
 
   def export
-    @datum  = [].push(@datum).compact  unless @datum.is_a?(Array)
-    @only   = [].push(@only).compact   unless @only.is_a?(Array)
-    @except = [].push(@except).compact unless @except.is_a?(Array)
+    @datum, @only, @except = munge(@datum), munge(@only), munge(@except)
 
     CSV.generate(@options) do |csv|
-      header = @datum.first.only(@only)     unless @only.empty?
-      header = @datum.first.except(@except) unless @except.empty?
-      csv << (@headers || (header || @datum.first).keys.map { |k| k.to_s.gsub('_'.freeze, ' '.freeze).capitalize })
-
-      @datum.lazy.each do |data|
-        cell = data.only(@only)     unless @only.empty?
-        cell = data.except(@except) unless @except.empty?
-        csv << (cell || data).values
-      end
+      csv << (@headers || (filter_first(@datum) || @datum.first).keys.map { |header| humanize(header) })
+      @datum.lazy.each { |data| csv << (filter(data) || data).values }
     end
   end
 
   def import
-    @only   = [].push(@only).compact   unless @only.is_a?(Array)
-    @except = [].push(@except).compact unless @except.is_a?(Array)
+    @only, @except = munge(@only), munge(@except)
 
-    processed_datum = []
-    CSV.foreach(@datum, @options, encoding: "iso-8859-1:UTF-8").lazy.each_with_index do |data, line|
-      data = encode_to_utf8(data)
+    datum = []
+    CSV.foreach(@datum, @options).with_index do |data, line|
+      data = encode_to_utf8(data) if force_encoding?
 
       if @headers.nil? && line.zero?
         @headers = data
       else
-        processed_data = {}
-        @headers.lazy.each_with_index { |v, i| processed_data.store(v.to_s, data.fetch(i, nil)) }
-
-        processed_data.only!(@only)     unless @only.empty?
-        processed_data.except!(@except) unless @except.empty?
-
-        processed_datum.push(processed_data)
+        subdata = {}
+        @headers.lazy.each_with_index do |header, i|
+          subdata.store(header.to_s, data.fetch(i, nil))
+        end
+        filter(subdata)
+        datum.push(subdata)
       end
     end
-    return(processed_datum)
+    datum
   end
 
 end

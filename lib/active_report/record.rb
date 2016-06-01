@@ -1,15 +1,11 @@
-require 'json'
-class ActiveReport::Record
+require "json"
+class ActiveReport::Record < ActiveReport::Base
 
   attr_accessor :datum, :model, :only, :except, :headers, :options
 
   def initialize(datum, model: nil, only: nil, except: nil, headers: nil, options: {})
-    @datum   = datum
-    @model   = model
-    @only    = only
-    @except  = except
-    @headers = headers
-    @options = options
+    @datum, @except, @headers, @model, @only = datum, except, headers, model, only
+    @options = duplicate_options.merge!(options)
   end
 
   def self.export(datum, only: nil, except: nil, headers: nil, options: {})
@@ -21,40 +17,27 @@ class ActiveReport::Record
   end
 
   def export
-    @datum  = @datum.is_a?(ActiveRecord::Relation) ? JSON.parse(@datum.to_json).flatten : [].push(@datum.attributes).compact
-    @only   = (@only.is_a?(Array)   ? @only   : [].push(@only).compact).map(&:to_s)
-    @except = (@except.is_a?(Array) ? @except : [].push(@except).compact).map(&:to_s)
+    @datum = @datum.is_a?(ActiveRecord::Relation) ? JSON.parse(@datum.to_json).flatten : merge(@datum.attributes)
+    @only, @except = munge(@only).map(&:to_s), munge(@except).map(&:to_s)
 
     CSV.generate(@options) do |csv|
-      header = @datum.first.only(@only)     unless @only.empty?
-      header = @datum.first.except(@except) unless @except.empty?
-      csv << (@headers || (header || @datum.first).keys.map { |k| k.to_s.gsub('_'.freeze, ' '.freeze).capitalize })
-
-      @datum.lazy.each do |data|
-        cell = data.only(@only)     unless @only.empty?
-        cell = data.except(@except) unless @except.empty?
-        csv << (cell || data).values
-      end
+      csv << (@headers || (filter_first(@datum) || @datum.first).keys.map { |header| humanize(header) })
+      @datum.lazy.each { |data| csv << (filter(data) || data).values }
     end
   end
 
   def import
     if @model.nil? || (@model.superclass != ActiveRecord::Base)
-      raise ArgumentError,
-        'Model must be an ActiveRecord::Base object.'.freeze
+      raise ArgumentError, "Model must be an ActiveRecord::Base object."
     end
 
-    @only   = [].push(@only).compact   unless @only.is_a?(Array)
-    @except = [].push(@except).compact unless @except.is_a?(Array)
-
     @datum = ActiveReport::Hash.import(@datum, headers: @headers, options: @options)
+    @only, @except = munge(@only), munge(@except)
+
     @datum.lazy.each do |data|
-      data.transform_keys! { |k| k.to_s.downcase.gsub(' '.freeze, '_'.freeze).to_sym }
-
-      data.only!(@only)     unless @only.empty?
-      data.except!(@except) unless @except.empty?
-      data.except!(:id)
-
+      data.transform_keys! { |key| key.to_s.downcase.gsub(" ", "_").to_sym }
+      filter(data)
+      data.delete(:id)
       @model.create(data)
     end
   end
