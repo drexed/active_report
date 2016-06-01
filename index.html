@@ -1,0 +1,212 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>ActiveReport by drexed</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>ActiveReport</h1>
+        <p>Gem for exporting/importing ruby objects to flat files vice versa.</p>
+
+        <p class="view"><a href="https://github.com/drexed/active_report">View the Project on GitHub <small>drexed/active_report</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/drexed/active_report/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/drexed/active_report/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/drexed/active_report">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="activereport" class="anchor" href="#activereport" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>ActiveReport</h1>
+
+<p><a href="http://badge.fury.io/rb/active_report"><img src="https://badge.fury.io/rb/active_report.svg" alt="Gem Version"></a>
+<a href="https://travis-ci.org/drexed/active_report"><img src="https://travis-ci.org/drexed/active_report.svg?branch=master" alt="Build Status"></a>
+<a href="https://coveralls.io/github/drexed/active_report?branch=master"><img src="https://coveralls.io/repos/github/drexed/active_report/badge.svg?branch=master" alt="Coverage Status"></a></p>
+
+<p>ActiveReport is a library to export CSV's out of arrays, hashes, and records and vice versa.</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Add this line to your application's Gemfile:</p>
+
+<div class="highlight highlight-source-ruby"><pre><span class="pl-k">gem</span> <span class="pl-s"><span class="pl-pds">"</span>active_report<span class="pl-pds">"</span></span></pre></div>
+
+<p>And then execute:</p>
+
+<pre><code>$ bundle
+</code></pre>
+
+<p>Or install it yourself as:</p>
+
+<pre><code>$ gem install active_report
+</code></pre>
+
+<h2>
+<a id="table-of-contents" class="anchor" href="#table-of-contents" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Table of Contents</h2>
+
+<ul>
+<li><a href="#configuration">Configuration</a></li>
+<li><a href="#array">Array</a></li>
+<li><a href="#hash">Hash</a></li>
+<li><a href="#record">Record</a></li>
+</ul>
+
+<h2>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuration</h2>
+
+<p><code>rails g active_report:install</code> will generate the following <code>active_report.rb</code> file:</p>
+
+<div class="highlight highlight-source-ruby"><pre><span class="pl-c"># config/initalizers/active_report.rb</span>
+
+<span class="pl-c1">ActiveReport</span>.configure <span class="pl-k">do </span>|<span class="pl-smi">config</span>|
+  <span class="pl-c"># option = default</span>
+
+  config.force_encoding <span class="pl-k">=</span> <span class="pl-c1">true</span>
+  config.options <span class="pl-k">=</span> { <span class="pl-c1">encoding:</span> <span class="pl-s"><span class="pl-pds">"</span>UTF-8<span class="pl-pds">"</span></span> }
+<span class="pl-k">end</span></pre></div>
+
+<h2>
+<a id="array" class="anchor" href="#array" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Array</h2>
+
+<p><strong>Export:</strong> Convert an array or array of arrays to a CSV.</p>
+
+<p><strong>Options:</strong></p>
+
+<ul>
+<li>headers: column titles of CSV data</li>
+<li>options: CSV options to be use on generation</li>
+</ul>
+
+<div class="highlight highlight-source-ruby"><pre><span class="pl-smi">@list</span> <span class="pl-k">=</span> [
+  [<span class="pl-c1">1</span>, <span class="pl-s"><span class="pl-pds">"</span>Lorem lipsum etc...<span class="pl-pds">"</span></span>, <span class="pl-c1">true</span>],
+  [<span class="pl-c1">2</span>, <span class="pl-s"><span class="pl-pds">"</span>Xorem lipsum etc...<span class="pl-pds">"</span></span>, <span class="pl-c1">false</span>],
+  [<span class="pl-c1">3</span>, <span class="pl-s"><span class="pl-pds">"</span>Porem lipsum etc...<span class="pl-pds">"</span></span>, <span class="pl-c1">true</span>]
+]
+
+<span class="pl-c1">ActiveReport</span>::<span class="pl-c1">Array</span>.export(<span class="pl-smi">@list</span>)
+<span class="pl-c1">ActiveReport</span>::<span class="pl-c1">Array</span>.export(<span class="pl-smi">@list</span>, <span class="pl-c1">headers:</span> [<span class="pl-s"><span class="pl-pds">"</span>ID<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Task<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Completed<span class="pl-pds">"</span></span>], <span class="pl-c1">options:</span> { <span class="pl-c1">col_sep:</span> <span class="pl-s"><span class="pl-pds">"</span>;<span class="pl-pds">"</span></span> })</pre></div>
+
+<p><strong>Import:</strong> Convert a CSV into an array or array of arrays.</p>
+
+<p><strong>Options:</strong></p>
+
+<ul>
+<li>headers: column titles of array data</li>
+<li>options: CSV options to be use on parsing</li>
+</ul>
+
+<div class="highlight highlight-source-ruby"><pre><span class="pl-c1">ActiveReport</span>::<span class="pl-c1">Array</span>.import(<span class="pl-s"><span class="pl-pds">"</span>sample.csv<span class="pl-pds">"</span></span>)
+<span class="pl-c1">ActiveReport</span>::<span class="pl-c1">Array</span>.import(<span class="pl-s"><span class="pl-pds">"</span>sample.csv<span class="pl-pds">"</span></span>, <span class="pl-c1">headers:</span> [<span class="pl-s"><span class="pl-pds">"</span>ID<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Task<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Completed<span class="pl-pds">"</span></span>], <span class="pl-c1">options:</span> { <span class="pl-c1">col_sep:</span> <span class="pl-s"><span class="pl-pds">"</span>;<span class="pl-pds">"</span></span> })</pre></div>
+
+<h2>
+<a id="hash" class="anchor" href="#hash" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Hash</h2>
+
+<p><strong>Export:</strong> Convert a hash or an array of hashes to a CSV.</p>
+
+<p><strong>Options:</strong></p>
+
+<ul>
+<li>only:    keys of pairs to be used on generation</li>
+<li>except:  keys of pairs not to be used on generation</li>
+<li>headers: column titles of CSV data</li>
+<li>options: CSV options to be use on generation</li>
+</ul>
+
+<div class="highlight highlight-source-ruby"><pre><span class="pl-smi">@list</span> <span class="pl-k">=</span> [
+  { <span class="pl-c1">id:</span> <span class="pl-c1">1</span>, <span class="pl-c1">item:</span> <span class="pl-s"><span class="pl-pds">"</span>Lorem lipsum etc...<span class="pl-pds">"</span></span>, <span class="pl-c1">completed:</span> <span class="pl-c1">true</span>},
+  { <span class="pl-c1">id:</span> <span class="pl-c1">2</span>, <span class="pl-c1">item:</span> <span class="pl-s"><span class="pl-pds">"</span>Xorem lipsum etc...<span class="pl-pds">"</span></span>, <span class="pl-c1">completed:</span> <span class="pl-c1">false</span>},
+  { <span class="pl-c1">id:</span> <span class="pl-c1">3</span>, <span class="pl-c1">item:</span> <span class="pl-s"><span class="pl-pds">"</span>Porem lipsum etc...<span class="pl-pds">"</span></span>, <span class="pl-c1">completed:</span> <span class="pl-c1">true</span>}
+]
+
+<span class="pl-c1">ActiveReport</span>::<span class="pl-c1">Hash</span>.export(<span class="pl-smi">@list</span>)
+<span class="pl-c1">ActiveReport</span>::<span class="pl-c1">Hash</span>.export(<span class="pl-smi">@list</span>, <span class="pl-c1">only:</span> [<span class="pl-c1">:id</span>, <span class="pl-c1">:item</span>], <span class="pl-c1">headers:</span> [<span class="pl-s"><span class="pl-pds">"</span>ID<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Task<span class="pl-pds">"</span></span>], <span class="pl-c1">options:</span> { <span class="pl-c1">col_sep:</span> <span class="pl-s"><span class="pl-pds">"</span>;<span class="pl-pds">"</span></span> })</pre></div>
+
+<p><strong>Import:</strong> Convert a CSV into an array of hashes.</p>
+
+<p><strong>Options:</strong></p>
+
+<ul>
+<li>only:    keys of pairs to be used on generation</li>
+<li>except:  keys of pairs not to be used on generation</li>
+<li>headers: column titles of CSV data <strong>Required</strong>
+</li>
+<li>options: CSV options to be use on parsing</li>
+</ul>
+
+<div class="highlight highlight-source-ruby"><pre><span class="pl-c1">ActiveReport</span>::<span class="pl-c1">Hash</span>.import(<span class="pl-s"><span class="pl-pds">"</span>sample.csv<span class="pl-pds">"</span></span>)
+<span class="pl-c1">ActiveReport</span>::<span class="pl-c1">Hash</span>.import(<span class="pl-s"><span class="pl-pds">"</span>sample.csv<span class="pl-pds">"</span></span>, <span class="pl-c1">except:</span> <span class="pl-c1">:completed</span>, <span class="pl-c1">headers:</span> [<span class="pl-s"><span class="pl-pds">"</span>ID<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Task<span class="pl-pds">"</span></span>], <span class="pl-c1">options:</span> { <span class="pl-c1">col_sep:</span> <span class="pl-s"><span class="pl-pds">"</span>;<span class="pl-pds">"</span></span> })</pre></div>
+
+<h2>
+<a id="record" class="anchor" href="#record" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Record</h2>
+
+<p><strong>Export:</strong> Convert an ActiveRecord/Relation object(s) to a CSV.</p>
+
+<p><strong>Options:</strong></p>
+
+<ul>
+<li>only:    columns to be used on generation</li>
+<li>except:  columns not to be used on generation</li>
+<li>headers: column titles of CSV data</li>
+<li>options: CSV options to be use on generation</li>
+</ul>
+
+<div class="highlight highlight-source-ruby"><pre><span class="pl-smi">@list</span> <span class="pl-k">=</span> [
+  <span class="pl-k">&lt;</span><span class="pl-c"># ActiveRecord::Relation Object &gt;,</span>
+  <span class="pl-k">&lt;</span><span class="pl-c"># ActiveRecord::Relation Object &gt;,</span>
+  <span class="pl-k">&lt;</span><span class="pl-c"># ActiveRecord::Relation Object &gt;</span>
+]
+
+<span class="pl-c1">ActiveReport</span>::<span class="pl-c1">Record</span>.export(<span class="pl-smi">@list</span>)
+<span class="pl-c1">ActiveReport</span>::<span class="pl-c1">Record</span>.export(<span class="pl-smi">@list</span>, <span class="pl-c1">only:</span> [<span class="pl-c1">:id</span>, <span class="pl-c1">:item</span>], <span class="pl-c1">headers:</span> [<span class="pl-s"><span class="pl-pds">"</span>ID<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Task<span class="pl-pds">"</span></span>], <span class="pl-c1">options:</span> { <span class="pl-c1">col_sep:</span> <span class="pl-s"><span class="pl-pds">"</span>;<span class="pl-pds">"</span></span> })</pre></div>
+
+<p><strong>Import:</strong> Create new database records from a CSV.</p>
+
+<p><strong>Options:</strong></p>
+
+<ul>
+<li>model:   model of objects being generated</li>
+<li>only:    keys of pairs to be used on generation</li>
+<li>except:  keys of pairs not to be used on generation</li>
+<li>headers: column titles of CSV data <strong>Required</strong>
+</li>
+<li>options: CSV options to be use on parsing</li>
+</ul>
+
+<div class="highlight highlight-source-ruby"><pre><span class="pl-c1">ActiveReport</span>::<span class="pl-c1">Record</span>.import(<span class="pl-s"><span class="pl-pds">"</span>sample.csv<span class="pl-pds">"</span></span>, <span class="pl-c1">model:</span> <span class="pl-c1">User</span>)
+<span class="pl-c1">ActiveReport</span>::<span class="pl-c1">Record</span>.import(<span class="pl-s"><span class="pl-pds">"</span>sample.csv<span class="pl-pds">"</span></span>, <span class="pl-c1">model:</span> <span class="pl-c1">User</span>, <span class="pl-c1">except:</span> <span class="pl-c1">:completed</span>, <span class="pl-c1">headers:</span> [<span class="pl-s"><span class="pl-pds">"</span>ID<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Task<span class="pl-pds">"</span></span>], <span class="pl-c1">options:</span> { <span class="pl-c1">col_sep:</span> <span class="pl-s"><span class="pl-pds">"</span>;<span class="pl-pds">"</span></span> })</pre></div>
+
+<h2>
+<a id="contributing" class="anchor" href="#contributing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contributing</h2>
+
+<p>Your contribution is welcome.</p>
+
+<ol>
+<li>Fork it</li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Added some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create new Pull Request</li>
+</ol>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/drexed">drexed</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
