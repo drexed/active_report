@@ -2,15 +2,21 @@ require "spec_helper"
 
 describe ActiveReport::Hash do
 
-  let(:sample_header) { ["Id", "Name", "Speed", "Hp", "Crash safety rated", "Created at"] }
-  let(:sample_header_alt) { ["No.", "Model", "Speed", "Horse Power", "Crash Safety Rated", "Driven On"] }
-  let(:sample_content) {
+  let(:sh1) { ["Id", "Name", "Speed", "Hp", "Crash safety rated", "Created at"] }
+  let(:sh2) { ["No.", "Model", "Speed", "Horse Power", "Crash Safety Rated", "Driven On"] }
+  let(:sc1) {
     {
       "Id" => "1", "Name" => "Porche", "Speed" => "225", "Hp" => "430",
       "Crash safety rated" => "true", "Created at" => "2014-08-22T20:59:34.000Z"
     }
   }
-  let(:sample_content_alt) {
+  let(:sc2) {
+    {
+      "Id" => 1, "Name" => "Porche", "Speed" => 225, "Hp" => 430,
+      "Crash safety rated" => true, "Created at" => "2014-08-22T20:59:34.000Z"
+    }
+  }
+  let(:sc3) {
     [
       {
         "Id" => "1", "Name" => "Ferrari", "Speed" => "235", "Hp" => "630",
@@ -26,158 +32,238 @@ describe ActiveReport::Hash do
       }
     ]
   }
+  let(:sc4) {
+    [
+      {
+        "Id" => 1, "Name" => "Ferrari", "Speed" => 235, "Hp" => 630,
+        "Crash safety rated" => true, "Created at" => "2014-08-23T20:59:34.000Z"
+      },
+      {
+        "Id" => 2, "Name" => "Lamborghini", "Speed" => 245, "Hp" => 720,
+        "Crash safety rated" => true, "Created at" => "2014-08-24T20:59:34.000Z"
+      },
+      {
+        "Id" => 3, "Name" => "Bugatti", "Speed" => 256, "Hp" => 1001,
+        "Crash safety rated" => false, "Created at" => "2014-08-25T20:59:34.000Z"
+      }
+    ]
+  }
 
   context "export to csv all data for an" do
     it "array of hashes" do
-      sample_csv = File.read("spec/support/csv/multi_all.csv")
-      constructed_csv = ActiveReport::Hash.export(sample_content_alt)
+      sarr = File.read("spec/support/csv/multi_all.csv")
+      ccsv = ActiveReport::Hash.export(sc3)
 
-      expect(constructed_csv).to eq(sample_csv)
+      expect(ccsv).to eq(sarr)
     end
 
     it "hash" do
-      sample_csv = File.read("spec/support/csv/solo_all.csv")
-      constructed_csv = ActiveReport::Hash.export(sample_content)
+      sarr = File.read("spec/support/csv/solo_all.csv")
+      ccsv = ActiveReport::Hash.export(sc1)
 
-      expect(constructed_csv).to eq(sample_csv)
+      expect(ccsv).to eq(sarr)
     end
   end
 
   context "export to csv only values for an" do
     it "array of hashes" do
-      sample_csv = File.read("spec/support/csv/multi_only.csv")
-      constructed_csv = ActiveReport::Hash.export(sample_content_alt, only: ["Id", "Name"])
+      sarr = File.read("spec/support/csv/multi_only.csv")
+      ccsv = ActiveReport::Hash.export(sc3, only: ["Id", "Name"])
 
-      expect(constructed_csv).to eq(sample_csv)
+      expect(ccsv).to eq(sarr)
     end
 
     it "hash" do
-      sample_csv = File.read("spec/support/csv/solo_only.csv")
-      constructed_csv = ActiveReport::Hash.export(sample_content, only: "Name")
+      sarr = File.read("spec/support/csv/solo_only.csv")
+      ccsv = ActiveReport::Hash.export(sc1, only: "Name")
 
-      expect(constructed_csv).to eq(sample_csv)
+      expect(ccsv).to eq(sarr)
     end
   end
 
   context "export to csv except values for an" do
     it "array of hashes" do
-      sample_csv = File.read("spec/support/csv/multi_except.csv")
-      constructed_csv = ActiveReport::Hash.export(sample_content_alt, except: ["Id", "Name"])
+      sarr = File.read("spec/support/csv/multi_except.csv")
+      ccsv = ActiveReport::Hash.export(sc3, except: ["Id", "Name"])
 
-      expect(constructed_csv).to eq(sample_csv)
+      expect(ccsv).to eq(sarr)
     end
 
     it "hash" do
-      sample_csv = File.read("spec/support/csv/solo_except.csv")
-      constructed_csv = ActiveReport::Hash.export(sample_content, except: "Name")
+      sarr = File.read("spec/support/csv/solo_except.csv")
+      ccsv = ActiveReport::Hash.export(sc1, except: "Name")
 
-      expect(constructed_csv).to eq(sample_csv)
+      expect(ccsv).to eq(sarr)
     end
   end
 
   context "export to csv with headers for an" do
     it "array of hashes" do
-      sample_csv = File.read("spec/support/csv/multi_headers.csv")
-      constructed_csv = ActiveReport::Hash.export(sample_content_alt, headers: sample_header_alt)
+      sarr = File.read("spec/support/csv/multi_headers.csv")
+      ccsv = ActiveReport::Hash.export(sc3, headers: sh2)
 
-      expect(constructed_csv).to eq(sample_csv)
+      expect(ccsv).to eq(sarr)
     end
 
     it "hash" do
-      sample_csv = File.read("spec/support/csv/solo_headers.csv")
-      constructed_csv = ActiveReport::Hash.export(sample_content, headers: sample_header_alt)
+      sarr = File.read("spec/support/csv/solo_headers.csv")
+      ccsv = ActiveReport::Hash.export(sc1, headers: sh2)
 
-      expect(constructed_csv).to eq(sample_csv)
+      expect(ccsv).to eq(sarr)
     end
   end
 
   context "export to csv with options for an" do
     it "array of hashes" do
-      sample_csv = File.read("spec/support/csv/multi_options.csv")
-      constructed_csv = ActiveReport::Hash.export(sample_content_alt, options: { col_sep: ";" })
+      sarr = File.read("spec/support/csv/multi_options.csv")
+      ccsv = ActiveReport::Hash.export(sc3, options: { col_sep: ";" })
 
-      expect(constructed_csv).to eq(sample_csv)
+      expect(ccsv).to eq(sarr)
     end
 
     it "hash" do
-      sample_csv = File.read("spec/support/csv/solo_options.csv")
-      constructed_csv = ActiveReport::Hash.export(sample_content, options: { col_sep: ";" })
+      sarr = File.read("spec/support/csv/solo_options.csv")
+      ccsv = ActiveReport::Hash.export(sc1, options: { col_sep: ";" })
 
-      expect(constructed_csv).to eq(sample_csv)
+      expect(ccsv).to eq(sarr)
     end
   end
 
-  context "import csv without headers returns an" do
-    it "array of hashes" do
-      constructed_array = ActiveReport::Hash.import("spec/support/csv/multi_all.csv")
+  context "import csv without headers returns" do
+    it "an array of hashes" do
+      carr = ActiveReport::Hash.import("spec/support/csv/multi_all.csv")
 
-      expect(constructed_array).to eq(sample_content_alt)
+      expect(carr).to eq(sc3)
     end
 
-    it "array with a hash" do
-      constructed_array = ActiveReport::Hash.import("spec/support/csv/solo_all.csv")
+    it "an evaluated array of hashes" do
+      carr = ActiveReport::Hash.evaluate.import("spec/support/csv/multi_all.csv")
 
-      expect(constructed_array).to eq([].push(sample_content))
-    end
-  end
-
-  context "import csv with headers returns an" do
-    it "array of hashes" do
-      constructed_array = ActiveReport::Hash.import("spec/support/csv/multi_headerless.csv", headers: sample_header)
-
-      expect(constructed_array).to eq(sample_content_alt)
+      expect(carr).to eq(sc4)
     end
 
-    it "array with a hash" do
-      constructed_array = ActiveReport::Hash.import("spec/support/csv/solo_headerless.csv", headers: sample_header)
+    it "a hash" do
+      carr = ActiveReport::Hash.import("spec/support/csv/solo_all.csv")
 
-      expect(constructed_array).to eq([].push(sample_content))
+      expect(carr).to eq(sc1)
+    end
+
+    it "an evaluated hash" do
+      carr = ActiveReport::Hash.evaluate.import("spec/support/csv/solo_all.csv")
+
+      expect(carr).to eq(sc2)
     end
   end
 
-  context "import csv only values returns an" do
-    it "array of arrays" do
-      sample_array = sample_content_alt.dup.map { |v| v.dup.keep_if { |k,v| ["Id", "Name"].include?(k) } }
-      constructed_array = ActiveReport::Hash.import("spec/support/csv/multi_headerless.csv", headers: sample_header, only: ["Id", "Name"])
+  context "import csv with headers returns" do
+    it "an array of hashes" do
+      carr = ActiveReport::Hash.import("spec/support/csv/multi_headerless.csv", headers: sh1)
 
-      expect(constructed_array).to eq(sample_array)
+      expect(carr).to eq(sc3)
     end
 
-    it "array with a hash" do
-      sample_array = sample_content.dup.keep_if { |k,v| ["Name"].include?(k) }
-      constructed_array = ActiveReport::Hash.import("spec/support/csv/solo_headerless.csv", headers: sample_header, only: "Name")
+    it "an evaluated array of hashes" do
+      carr = ActiveReport::Hash.evaluate.import("spec/support/csv/multi_headerless.csv", headers: sh1)
 
-      expect(constructed_array).to eq([].push(sample_array))
-    end
-  end
-
-  context "import csv except values returns an" do
-    it "array of arrays" do
-      sample_array = sample_content_alt.dup.map { |v| v.dup.delete_if { |k,v| ["Id", "Name"].include?(k) } }
-      constructed_array = ActiveReport::Hash.import("spec/support/csv/multi_headerless.csv", headers: sample_header, except: ["Id", "Name"])
-
-      expect(constructed_array).to eq(sample_array)
+      expect(carr).to eq(sc4)
     end
 
-    it "array with a hash" do
-      sample_array = sample_content.dup.delete_if { |k,v| ["Name"].include?(k) }
-      constructed_array = ActiveReport::Hash.import("spec/support/csv/solo_headerless.csv", headers: sample_header, except: "Name")
+    it "a hash" do
+      carr = ActiveReport::Hash.import("spec/support/csv/solo_headerless.csv", headers: sh1)
 
-      expect(constructed_array).to eq([].push(sample_array))
+      expect(carr).to eq(sc1)
+    end
+
+    it "an evaluated hash" do
+      carr = ActiveReport::Hash.evaluate.import("spec/support/csv/solo_headerless.csv", headers: sh1)
+
+      expect(carr).to eq(sc2)
     end
   end
 
-  context "import csv with options returns an" do
-    it "array of hashes" do
-      constructed_array = ActiveReport::Hash.import("spec/support/csv/multi_headerless_options.csv", headers: sample_header, options: { col_sep: ";" })
+  context "import csv only values returns" do
+    it "an array of arrays" do
+      sarr = sc3.dup.map { |v| v.dup.keep_if { |k, v| ["Id", "Name"].include?(k) } }
+      carr = ActiveReport::Hash.import("spec/support/csv/multi_headerless.csv", headers: sh1, only: ["Id", "Name"])
 
-      expect(constructed_array).to eq(sample_content_alt)
+      expect(carr).to eq(sarr)
     end
 
-    it "array with a hash" do
-      constructed_array = ActiveReport::Hash.import("spec/support/csv/solo_headerless_options.csv", headers: sample_header, options: { col_sep: ";" })
+    it "an evaluated array of arrays" do
+      sarr = sc4.dup.map { |v| v.dup.keep_if { |k, v| ["Id", "Name"].include?(k) } }
+      carr = ActiveReport::Hash.evaluate.import("spec/support/csv/multi_headerless.csv", headers: sh1, only: ["Id", "Name"])
 
-      expect(constructed_array).to eq([].push(sample_content))
+      expect(carr).to eq(sarr)
+    end
+
+    it "a hash" do
+      sarr = sc1.dup.keep_if { |k, v| ["Name"].include?(k) }
+      carr = ActiveReport::Hash.import("spec/support/csv/solo_headerless.csv", headers: sh1, only: "Name")
+
+      expect(carr).to eq(sarr)
+    end
+
+    it "an evaluated hash" do
+      sarr = sc2.dup.keep_if { |k, v| ["Name"].include?(k) }
+      carr = ActiveReport::Hash.evaluate.import("spec/support/csv/solo_headerless.csv", headers: sh1, only: "Name")
+
+      expect(carr).to eq(sarr)
+    end
+  end
+
+  context "import csv except values returns" do
+    it "an array of arrays" do
+      sarr = sc3.dup.map { |v| v.dup.delete_if { |k, v| ["Id", "Name"].include?(k) } }
+      carr = ActiveReport::Hash.import("spec/support/csv/multi_headerless.csv", headers: sh1, except: ["Id", "Name"])
+
+      expect(carr).to eq(sarr)
+    end
+
+    it "an evaluated array of arrays" do
+      sarr = sc4.dup.map { |v| v.dup.delete_if { |k, v| ["Id", "Name"].include?(k) } }
+      carr = ActiveReport::Hash.evaluate.import("spec/support/csv/multi_headerless.csv", headers: sh1, except: ["Id", "Name"])
+
+      expect(carr).to eq(sarr)
+    end
+
+    it "a hash" do
+      sarr = sc1.dup.delete_if { |k, v| ["Name"].include?(k) }
+      carr = ActiveReport::Hash.import("spec/support/csv/solo_headerless.csv", headers: sh1, except: "Name")
+
+      expect(carr).to eq(sarr)
+    end
+
+    it "an evaluated hash" do
+      sarr = sc2.dup.delete_if { |k, v| ["Name"].include?(k) }
+      carr = ActiveReport::Hash.evaluate.import("spec/support/csv/solo_headerless.csv", headers: sh1, except: "Name")
+
+      expect(carr).to eq(sarr)
+    end
+  end
+
+  context "import csv with options returns" do
+    it "an array of hashes" do
+      carr = ActiveReport::Hash.import("spec/support/csv/multi_headerless_options.csv", headers: sh1, options: { col_sep: ";" })
+
+      expect(carr).to eq(sc3)
+    end
+
+    it "an evaluated array of hashes" do
+      carr = ActiveReport::Hash.evaluate.import("spec/support/csv/multi_headerless_options.csv", headers: sh1, options: { col_sep: ";" })
+
+      expect(carr).to eq(sc4)
+    end
+
+    it "a hash" do
+      carr = ActiveReport::Hash.import("spec/support/csv/solo_headerless_options.csv", headers: sh1, options: { col_sep: ";" })
+
+      expect(carr).to eq(sc1)
+    end
+
+    it "an evaluated hash" do
+      carr = ActiveReport::Hash.evaluate.import("spec/support/csv/solo_headerless_options.csv", headers: sh1, options: { col_sep: ";" })
+
+      expect(carr).to eq(sc2)
     end
   end
 

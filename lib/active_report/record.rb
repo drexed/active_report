@@ -32,13 +32,18 @@ class ActiveReport::Record < ActiveReport::Base
     end
 
     @datum = ActiveReport::Hash.import(@datum, headers: @headers, options: @options)
-    @only, @except = munge(@only), munge(@except)
+    @datum, @only, @except = munge(@datum), munge(@only), munge(@except)
 
     @datum.lazy.each do |data|
-      data.transform_keys! { |key| key.to_s.downcase.gsub(" ", "_").to_sym }
-      filter(data)
-      data.delete(:id)
-      @model.create(data)
+      params = {}
+      data.each do |key, value|
+        key = key.to_s.downcase.gsub(" ", "_").gsub("-", "_").to_sym
+        params.store(key, value)
+      end
+
+      filter(params)
+      params.delete(:id)
+      @model.create(params)
     end
   end
 

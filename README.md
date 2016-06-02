@@ -28,6 +28,7 @@ Or install it yourself as:
 * [Array](#array)
 * [Hash](#hash)
 * [Record](#record)
+* [Evaluate](#evaluate)
 
 ## Configuration
 
@@ -141,6 +142,14 @@ ActiveReport::Record.export(@list, only: [:id, :item], headers: ["ID", "Task"], 
 ```ruby
 ActiveReport::Record.import("sample.csv", model: User)
 ActiveReport::Record.import("sample.csv", model: User, except: :completed, headers: ["ID", "Task"], options: { col_sep: ";" })
+```
+
+## Evaluate
+
+**Array/Hash:** Convert the import of a array or hash to proper ruby objects.
+
+```ruby
+ActiveReport::Hash.evaluate.import("sample.csv")
 ```
 
 ## Contributing

@@ -20,7 +20,7 @@ class ActiveReport::Array < ActiveReport::Base
 
     CSV.generate(@options) do |csv|
       csv << @headers unless @headers.nil?
-      @datum.lazy.each { |data| csv << data }
+      @datum.lazy.each { |cell| csv << cell }
     end
   end
 
@@ -32,7 +32,9 @@ class ActiveReport::Array < ActiveReport::Base
       datum.push(data)
     end
 
-    datum.size < 2 ? datum.flatten : datum
+    datum = datum.flatten if datum.size < 2
+    datum = metatransform(datum)
+    datum
   end
 
 end

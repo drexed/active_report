@@ -42,6 +42,9 @@ class ActiveReport::Hash < ActiveReport::Base
         datum.push(subdata)
       end
     end
+
+    datum = datum.first if datum.size == 1
+    datum = metatransform(datum)
     datum
   end
 

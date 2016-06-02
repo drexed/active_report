@@ -1,5 +1,12 @@
 class ActiveReport::Base
 
+  @@evaluate = false
+
+  def self.evaluate(value=true)
+    @@evaluate = value
+    self
+  end
+
   private
 
   def duplicate_options
@@ -14,24 +21,10 @@ class ActiveReport::Base
     end
   end
 
-  def force_encoding?
-    ActiveReport.configuration.force_encoding
-  end
-
-  def humanize(object)
-    object.to_s.gsub("_", " ").capitalize
-  end
-
-  def merge(object)
-    [].push(object).compact
-  end
-
-  def munge(object)
-    object.is_a?(Array) ? object : merge(object)
-  end
-
-  def munge_first(object)
-    object.first.is_a?(Array) ? object : merge(object)
+  def evaluate?
+    value = @@evaluate
+    @@evaluate = false
+    value
   end
 
   def filter(object)
@@ -48,6 +41,53 @@ class ActiveReport::Base
     else
       object.first.keep_if { |key, value| @only.include?(key) }
     end
+  end
+
+  def force_encoding?
+    ActiveReport.configuration.force_encoding
+  end
+
+  def humanize(object)
+    object.to_s.gsub("_", " ").capitalize
+  end
+
+  def merge(object)
+    [].push(object).compact
+  end
+
+  def metaform(value)
+    value.nil? ? value : eval(value)
+  rescue Exception => e
+    value
+  end
+
+  def metamorph(datum)
+    datum = case datum.class.name
+    when "Array"
+      if datum.first.is_a?(Array)
+        datum.map { |array| array.map { |value| metaform(value) } }
+      elsif datum.first.is_a?(Hash)
+        datum.map { |hash| hash.each { |key, value| hash.store(key, metaform(value)) } }
+      else
+        datum.map { |value| metaform(value) }
+      end
+    when "Hash"
+      datum.each { |key, value| datum.store(key, metaform(value)) }
+    else
+      metaform(datum)
+    end
+  end
+
+  def metatransform(datum)
+    datum.empty? ? nil : (evaluate? ? metamorph(datum) : datum)
+  end
+
+  def munge(object)
+    object.is_a?(Array) ? object : merge(object)
+  end
+
+  def munge_first(object)
+    object.first.is_a?(Array) ? object : merge(object)
   end
 
 end

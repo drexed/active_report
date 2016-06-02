@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary = %q{Gem for exporting/importing ruby objects to flat files vice versa.}
   spec.description = %q{Export or import data from multiple input formats such as arrays, hashes, and active record or vice versa.}
-  spec.homepage = "https://github.com/drexed/active_report"
+  spec.homepage = "http://drexed.github.io/active_report"
   spec.license = "MIT"
 
   spec.files = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
