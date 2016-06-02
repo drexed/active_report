@@ -62,7 +62,7 @@ class ActiveReport::Base
   end
 
   def metamorph(datum)
-    datum = case datum.class.name
+    case datum.class.name
     when "Array"
       if datum.first.is_a?(Array)
         datum.map { |array| array.map { |value| metaform(value) } }
