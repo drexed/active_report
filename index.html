@@ -62,6 +62,7 @@
 <li><a href="#array">Array</a></li>
 <li><a href="#hash">Hash</a></li>
 <li><a href="#record">Record</a></li>
+<li><a href="#evaluate">Evaluate</a></li>
 </ul>
 
 <h2>
@@ -187,6 +188,13 @@
 
 <div class="highlight highlight-source-ruby"><pre><span class="pl-c1">ActiveReport</span>::<span class="pl-c1">Record</span>.import(<span class="pl-s"><span class="pl-pds">"</span>sample.csv<span class="pl-pds">"</span></span>, <span class="pl-c1">model:</span> <span class="pl-c1">User</span>)
 <span class="pl-c1">ActiveReport</span>::<span class="pl-c1">Record</span>.import(<span class="pl-s"><span class="pl-pds">"</span>sample.csv<span class="pl-pds">"</span></span>, <span class="pl-c1">model:</span> <span class="pl-c1">User</span>, <span class="pl-c1">except:</span> <span class="pl-c1">:completed</span>, <span class="pl-c1">headers:</span> [<span class="pl-s"><span class="pl-pds">"</span>ID<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Task<span class="pl-pds">"</span></span>], <span class="pl-c1">options:</span> { <span class="pl-c1">col_sep:</span> <span class="pl-s"><span class="pl-pds">"</span>;<span class="pl-pds">"</span></span> })</pre></div>
+
+<h2>
+<a id="evaluate" class="anchor" href="#evaluate" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Evaluate</h2>
+
+<p><strong>Array/Hash:</strong> Convert the import of a array or hash to proper ruby objects.</p>
+
+<div class="highlight highlight-source-ruby"><pre><span class="pl-c1">ActiveReport</span>::<span class="pl-c1">Hash</span>.evaluate.import(<span class="pl-s"><span class="pl-pds">"</span>sample.csv<span class="pl-pds">"</span></span>)</pre></div>
 
 <h2>
 <a id="contributing" class="anchor" href="#contributing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contributing</h2>
