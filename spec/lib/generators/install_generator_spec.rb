@@ -11,7 +11,7 @@ describe ActiveReport::InstallGenerator, type: :generator do
   it 'to be true' do
     sample_path = 'spec/lib/tmp/config/initializers/active_report.rb'
 
-    expect_file = File.read('spec/support/generators/sample.rb')
+    expect_file = File.read('lib/generators/active_report/templates/install.rb')
     sample_file = File.read(sample_path)
 
     expect(File.exist?(sample_path)).to eq(true)
