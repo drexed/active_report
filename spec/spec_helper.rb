@@ -2,7 +2,6 @@ require 'coveralls'
 Coveralls.wear!
 
 require 'active_record'
-require 'active_support'
 require 'active_report'
 require 'pathname'
 require 'generator_spec'
