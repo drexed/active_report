@@ -1,4 +1,4 @@
-require "json"
+require 'json'
 class ActiveReport::Record < ActiveReport::Base
 
   attr_accessor :datum, :model, :only, :except, :headers, :options
@@ -28,7 +28,7 @@ class ActiveReport::Record < ActiveReport::Base
 
   def import
     if @model.nil? || (@model.superclass != ActiveRecord::Base)
-      raise ArgumentError, "Model must be an ActiveRecord::Base object."
+      raise ArgumentError, 'Model must be an ActiveRecord::Base object.'
     end
 
     @datum = ActiveReport::Hash.import(@datum, headers: @headers, options: @options)
@@ -37,7 +37,7 @@ class ActiveReport::Record < ActiveReport::Base
     @datum.lazy.each do |data|
       params = {}
       data.each do |key, value|
-        key = key.to_s.downcase.gsub(" ", "_").gsub("-", "_").to_sym
+        key = key.to_s.downcase.gsub(' ', '_').gsub('-', '_').to_sym
         params.store(key, value)
       end
 

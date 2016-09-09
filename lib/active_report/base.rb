@@ -16,8 +16,8 @@ class ActiveReport::Base
   def encode_to_utf8(line)
     line.map do |l|
       next if l.nil?
-      l.gsub!(/"/, "")
-      l.encode!("UTF-8", "binary", invalid: :replace, undef: :replace, replace: "")
+      l.gsub!(/"/, '')
+      l.encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
     end
   end
 
@@ -48,7 +48,7 @@ class ActiveReport::Base
   end
 
   def humanize(object)
-    object.to_s.gsub("_", " ").capitalize
+    object.to_s.gsub('_', ' ').capitalize
   end
 
   def merge(object)
@@ -63,7 +63,7 @@ class ActiveReport::Base
 
   def metamorph(datum)
     case datum.class.name
-    when "Array"
+    when 'Array'
       if datum.first.is_a?(Array)
         datum.map { |array| array.map { |value| metaform(value) } }
       elsif datum.first.is_a?(Hash)
@@ -71,7 +71,7 @@ class ActiveReport::Base
       else
         datum.map { |value| metaform(value) }
       end
-    when "Hash"
+    when 'Hash'
       datum.each { |key, value| datum.store(key, metaform(value)) }
     else
       metaform(datum)

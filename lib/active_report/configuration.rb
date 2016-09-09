@@ -4,7 +4,7 @@ class ActiveReport::Configuration
 
   def initialize
     @force_encoding = true
-    @options = { encoding: "UTF-8" }
+    @options = { encoding: 'UTF-8' }
   end
 
 end

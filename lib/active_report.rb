@@ -1,6 +1,6 @@
-require "csv"
-require "active_report/version"
-require "active_report/configuration"
+require 'csv'
+require 'active_report/version'
+require 'active_report/configuration'
 
 module ActiveReport
 
@@ -22,9 +22,9 @@ module ActiveReport
 
 end
 
-require "active_report/base"
-require "active_report/array"
-require "active_report/hash"
-require "active_report/record"
+require 'active_report/base'
+require 'active_report/array'
+require 'active_report/hash'
+require 'active_report/record'
 
-require "generators/active_report/install_generator"
+require 'generators/active_report/install_generator'

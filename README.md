@@ -11,7 +11,7 @@ ActiveReport is a library to export CSV's out of arrays, hashes, and records and
 Add this line to your application's Gemfile:
 
 ```ruby
-gem "active_report"
+gem 'active_report'
 ```
 
 And then execute:
@@ -32,16 +32,13 @@ Or install it yourself as:
 
 ## Configuration
 
-`rails g active_report:install` will generate the following `active_report.rb` file:
+`rails g active_report:install` will generate the following file:
+`../config/initalizers/active_report.rb`
 
 ```ruby
-# config/initalizers/active_report.rb
-
 ActiveReport.configure do |config|
-  # option = default
-
   config.force_encoding = true
-  config.options = { encoding: "UTF-8" }
+  config.options = { encoding: 'UTF-8' }
 end
 ```
 
@@ -55,13 +52,13 @@ end
 
 ```ruby
 @list = [
-  [1, "Lorem lipsum etc...", true],
-  [2, "Xorem lipsum etc...", false],
-  [3, "Porem lipsum etc...", true]
+  [1, 'Lorem lipsum etc...', true],
+  [2, 'Xorem lipsum etc...', false],
+  [3, 'Porem lipsum etc...', true]
 ]
 
 ActiveReport::Array.export(@list)
-ActiveReport::Array.export(@list, headers: ["ID", "Task", "Completed"], options: { col_sep: ";" })
+ActiveReport::Array.export(@list, headers: ['ID', 'Task', 'Completed'], options: { col_sep: ';' })
 ```
 
 **Import:** Convert a CSV into an array or array of arrays.
@@ -71,8 +68,8 @@ ActiveReport::Array.export(@list, headers: ["ID", "Task", "Completed"], options:
  * options: CSV options to be use on parsing
 
 ```ruby
-ActiveReport::Array.import("sample.csv")
-ActiveReport::Array.import("sample.csv", headers: ["ID", "Task", "Completed"], options: { col_sep: ";" })
+ActiveReport::Array.import('sample.csv')
+ActiveReport::Array.import('sample.csv', headers: ['ID', 'Task', 'Completed'], options: { col_sep: ';' })
 ```
 
 ## Hash
@@ -87,13 +84,13 @@ ActiveReport::Array.import("sample.csv", headers: ["ID", "Task", "Completed"], o
 
 ```ruby
 @list = [
-  { id: 1, item: "Lorem lipsum etc...", completed: true},
-  { id: 2, item: "Xorem lipsum etc...", completed: false},
-  { id: 3, item: "Porem lipsum etc...", completed: true}
+  { id: 1, item: 'Lorem lipsum etc...', completed: true},
+  { id: 2, item: 'Xorem lipsum etc...', completed: false},
+  { id: 3, item: 'Porem lipsum etc...', completed: true}
 ]
 
 ActiveReport::Hash.export(@list)
-ActiveReport::Hash.export(@list, only: [:id, :item], headers: ["ID", "Task"], options: { col_sep: ";" })
+ActiveReport::Hash.export(@list, only: [:id, :item], headers: ['ID', 'Task'], options: { col_sep: ';' })
 ```
 
 **Import:** Convert a CSV into an array of hashes.
@@ -105,8 +102,8 @@ ActiveReport::Hash.export(@list, only: [:id, :item], headers: ["ID", "Task"], op
  * options: CSV options to be use on parsing
 
 ```ruby
-ActiveReport::Hash.import("sample.csv")
-ActiveReport::Hash.import("sample.csv", except: :completed, headers: ["ID", "Task"], options: { col_sep: ";" })
+ActiveReport::Hash.import('sample.csv')
+ActiveReport::Hash.import('sample.csv', except: :completed, headers: ['ID', 'Task'], options: { col_sep: ';' })
 ```
 
 ## Record
@@ -127,7 +124,7 @@ ActiveReport::Hash.import("sample.csv", except: :completed, headers: ["ID", "Tas
 ]
 
 ActiveReport::Record.export(@list)
-ActiveReport::Record.export(@list, only: [:id, :item], headers: ["ID", "Task"], options: { col_sep: ";" })
+ActiveReport::Record.export(@list, only: [:id, :item], headers: ['ID', 'Task'], options: { col_sep: ';' })
 ```
 
 **Import:** Create new database records from a CSV.
@@ -140,8 +137,8 @@ ActiveReport::Record.export(@list, only: [:id, :item], headers: ["ID", "Task"], 
  * options: CSV options to be use on parsing
 
 ```ruby
-ActiveReport::Record.import("sample.csv", model: User)
-ActiveReport::Record.import("sample.csv", model: User, except: :completed, headers: ["ID", "Task"], options: { col_sep: ";" })
+ActiveReport::Record.import('sample.csv', model: User)
+ActiveReport::Record.import('sample.csv', model: User, except: :completed, headers: ['ID', 'Task'], options: { col_sep: ';' })
 ```
 
 ## Evaluate
@@ -149,7 +146,7 @@ ActiveReport::Record.import("sample.csv", model: User, except: :completed, heade
 **Array/Hash:** Convert the import of a array or hash to proper ruby objects.
 
 ```ruby
-ActiveReport::Hash.evaluate.import("sample.csv")
+ActiveReport::Hash.evaluate.import('sample.csv')
 ```
 
 ## Contributing
