@@ -4,7 +4,11 @@ class ActiveReport::Record < ActiveReport::Base
   attr_accessor :datum, :model, :only, :except, :headers, :options
 
   def initialize(datum, model: nil, only: nil, except: nil, headers: nil, options: {})
-    @datum, @except, @headers, @model, @only = datum, except, headers, model, only
+    @datum = datum
+    @except = except
+    @headers = headers
+    @model = model
+    @only = only
     @options = duplicate_options.merge!(options)
   end
 

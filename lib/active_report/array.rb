@@ -3,7 +3,8 @@ class ActiveReport::Array < ActiveReport::Base
   attr_accessor :datum, :headers, :options
 
   def initialize(datum, headers: nil, options: {})
-    @datum, @headers = datum, headers
+    @datum = datum
+    @headers = headers
     @options = duplicate_options.merge!(options)
   end
 
@@ -33,8 +34,7 @@ class ActiveReport::Array < ActiveReport::Base
     end
 
     datum = datum.flatten if datum.size < 2
-    datum = metatransform(datum)
-    datum
+    metatransform(datum)
   end
 
 end

@@ -3,7 +3,10 @@ class ActiveReport::Hash < ActiveReport::Base
   attr_accessor :datum, :only, :except, :headers, :options
 
   def initialize(datum, only: nil, except: nil, headers: nil, options: {})
-    @datum, @except, @headers, @only = datum, except, headers, only
+    @datum = datum
+    @except = except
+    @headers = headers
+    @only = only
     @options = duplicate_options.merge!(options)
   end
 
@@ -16,16 +19,19 @@ class ActiveReport::Hash < ActiveReport::Base
   end
 
   def export
-    @datum, @only, @except = munge(@datum), munge(@only), munge(@except)
+    @datum = munge(@datum)
+    @only = munge(@only)
+    @except = munge(@except)
 
     CSV.generate(@options) do |csv|
-      csv << (@headers || (filter_first(@datum) || @datum.first).keys.map { |header| humanize(header) })
+      csv << (@headers || (filter_first(@datum) || @datum.first).keys.map { |hdr| humanize(hdr) })
       @datum.lazy.each { |data| csv << (filter(data) || data).values }
     end
   end
 
   def import
-    @only, @except = munge(@only), munge(@except)
+    @only = munge(@only)
+    @except = munge(@except)
 
     datum = []
     CSV.foreach(@datum, @options).with_index do |data, line|

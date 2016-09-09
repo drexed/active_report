@@ -10,7 +10,9 @@ Gem::Specification.new do |spec|
   spec.email = ['j.gomez@drexed.com']
 
   spec.summary = 'Gem for exporting/importing ruby objects to flat files vice versa.'
+  # rubocop:disable Metrics/LineLength
   spec.description = 'Export or import data from multiple input formats such as arrays, hashes, and active record or vice versa.'
+  # rubocop:enable Metrics/LineLength
   spec.homepage = 'http://drexed.github.io/active_report'
   spec.license = 'MIT'
 

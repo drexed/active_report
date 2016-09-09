@@ -2,7 +2,7 @@ class ActiveReport::Base
 
   @@evaluate = false
 
-  def self.evaluate(value=true)
+  def self.evaluate(value = true)
     @@evaluate = value
     self
   end
@@ -13,6 +13,7 @@ class ActiveReport::Base
     ActiveReport.configuration.options.dup
   end
 
+  # rubocop:disable Performance/StringReplacement
   def encode_to_utf8(line)
     line.map do |chr|
       next if chr.nil?
@@ -20,6 +21,7 @@ class ActiveReport::Base
       chr.encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
     end
   end
+  # rubocop:enable Performance/StringReplacement
 
   def evaluate?
     value = @@evaluate
@@ -29,17 +31,17 @@ class ActiveReport::Base
 
   def filter(object)
     if @only.empty?
-      object.delete_if { |key, value| @except.include?(key) } unless @except.empty?
+      object.delete_if { |key, _| @except.include?(key) } unless @except.empty?
     else
-      object.keep_if { |key, value| @only.include?(key) }
+      object.keep_if { |key, _| @only.include?(key) }
     end
   end
 
   def filter_first(object)
     if @only.empty?
-      object.first.delete_if { |key, value| @except.include?(key) } unless @except.empty?
+      object.first.delete_if { |key, _| @except.include?(key) } unless @except.empty?
     else
-      object.first.keep_if { |key, value| @only.include?(key) }
+      object.first.keep_if { |key, _| @only.include?(key) }
     end
   end
 
@@ -55,31 +57,34 @@ class ActiveReport::Base
     [].push(object).compact
   end
 
+  # rubocop:disable Lint/Eval, Lint/RescueException
   def metaform(value)
     value.nil? ? value : eval(value)
   rescue Exception
     value
   end
+  # rubocop:enable Lint/Eval, Lint/RescueException
 
   def metamorph(datum)
     case datum.class.name
     when 'Array'
       if datum.first.is_a?(Array)
-        datum.map { |array| array.map { |value| metaform(value) } }
+        datum.map { |arr| arr.map { |val| metaform(val) } }
       elsif datum.first.is_a?(Hash)
-        datum.map { |hash| hash.each { |key, value| hash.store(key, metaform(value)) } }
+        datum.map { |hsh| hsh.each { |key, val| hsh.store(key, metaform(val)) } }
       else
-        datum.map { |value| metaform(value) }
+        datum.map { |val| metaform(val) }
       end
     when 'Hash'
-      datum.each { |key, value| datum.store(key, metaform(value)) }
+      datum.each { |key, val| datum.store(key, metaform(val)) }
     else
       metaform(datum)
     end
   end
 
   def metatransform(datum)
-    datum.empty? ? nil : (evaluate? ? metamorph(datum) : datum)
+    return(nil) if datum.empty?
+    evaluate? ? metamorph(datum) : datum
   end
 
   def munge(object)
