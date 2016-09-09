@@ -17,11 +17,17 @@ class ActiveReport::Record < ActiveReport::Base
   end
 
   def export
-    @datum = @datum.is_a?(ActiveRecord::Relation) ? JSON.parse(@datum.to_json).flatten : merge(@datum.attributes)
-    @only, @except = munge(@only).map(&:to_s), munge(@except).map(&:to_s)
+    @datum = if @datum.is_a?(ActiveRecord::Relation)
+               JSON.parse(@datum.to_json).flatten
+             else
+               merge(@datum.attributes)
+             end
+
+    @only = munge(@only).map(&:to_s)
+    @except = munge(@except).map(&:to_s)
 
     CSV.generate(@options) do |csv|
-      csv << (@headers || (filter_first(@datum) || @datum.first).keys.map { |header| humanize(header) })
+      csv << (@headers || (filter_first(@datum) || @datum.first).keys.map { |hdr| humanize(hdr) })
       @datum.lazy.each { |data| csv << (filter(data) || data).values }
     end
   end
@@ -32,12 +38,14 @@ class ActiveReport::Record < ActiveReport::Base
     end
 
     @datum = ActiveReport::Hash.import(@datum, headers: @headers, options: @options)
-    @datum, @only, @except = munge(@datum), munge(@only), munge(@except)
+    @datum = munge(@datum)
+    @only = munge(@only)
+    @except = munge(@except)
 
     @datum.lazy.each do |data|
       params = {}
       data.each do |key, value|
-        key = key.to_s.downcase.gsub(' ', '_').gsub('-', '_').to_sym
+        key = key.to_s.downcase.tr(' ', '_').tr('-', '_').to_sym
         params.store(key, value)
       end
 

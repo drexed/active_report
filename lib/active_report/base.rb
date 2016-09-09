@@ -14,10 +14,10 @@ class ActiveReport::Base
   end
 
   def encode_to_utf8(line)
-    line.map do |l|
-      next if l.nil?
-      l.gsub!(/"/, '')
-      l.encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
+    line.map do |chr|
+      next if chr.nil?
+      chr.gsub!(/"/, '')
+      chr.encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
     end
   end
 
@@ -48,7 +48,7 @@ class ActiveReport::Base
   end
 
   def humanize(object)
-    object.to_s.gsub('_', ' ').capitalize
+    object.to_s.tr('_', ' ').capitalize
   end
 
   def merge(object)
@@ -57,7 +57,7 @@ class ActiveReport::Base
 
   def metaform(value)
     value.nil? ? value : eval(value)
-  rescue Exception => e
+  rescue Exception
     value
   end
 

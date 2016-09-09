@@ -35,8 +35,8 @@ class ActiveReport::Hash < ActiveReport::Base
         @headers = data
       else
         subdata = {}
-        @headers.lazy.each_with_index do |header, i|
-          subdata.store(header.to_s, data.fetch(i, nil))
+        @headers.lazy.each_with_index do |header, idx|
+          subdata.store(header.to_s, data[idx])
         end
         filter(subdata)
         datum.push(subdata)

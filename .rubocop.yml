@@ -10,9 +10,15 @@ Metrics/ClassLength:
   Enabled: false
 Metrics/ModuleLength:
   Enabled: false
+Metrics/ParameterLists:
+  Enabled: false
 Style/Alias:
   EnforcedStyle: prefer_alias_method
 Style/BracesAroundHashParameters:
+  Enabled: false
+Style/ClassAndModuleChildren:
+  EnforcedStyle: compact
+Style/ClassVars:
   Enabled: false
 Style/ClosingParenthesisIndentation:
   Enabled: false
