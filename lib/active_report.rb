@@ -1,6 +1,6 @@
 require 'csv'
 
-%w(version settings base array hash record).each do |file_name|
+%w[version settings base array hash record].each do |file_name|
   require "active_report/#{file_name}"
 end
 

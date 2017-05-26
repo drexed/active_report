@@ -57,13 +57,13 @@ class ActiveReport::Base
     [].push(object).compact
   end
 
-  # rubocop:disable Lint/Eval, Lint/RescueException
+  # rubocop:disable Security/Eval, Lint/RescueException
   def metaform(value)
     value.nil? ? value : eval(value)
   rescue Exception
     value
   end
-  # rubocop:enable Lint/Eval, Lint/RescueException
+  # rubocop:enable Security/Eval, Lint/RescueException
 
   def metamorph(datum)
     case datum.class.name
