@@ -26,7 +26,7 @@ describe ActiveReport::Record do
 
   context 'export to csv all data for an' do
     it 'array of records' do
-      hash_type_2.each { |data| Car.create!(data) }
+      hash_type_2.each { |v| Car.create!(v) }
 
       sarr = File.read(multi_all_path)
       ccsv = ActiveReport::Record.export(Car.all)
@@ -46,7 +46,7 @@ describe ActiveReport::Record do
 
   context 'export to csv only values for an' do
     it 'array of records' do
-      hash_type_2.each { |data| Car.create!(data) }
+      hash_type_2.each { |v| Car.create!(v) }
 
       sarr = File.read(multi_only_path)
       ccsv = ActiveReport::Record.export(Car.all,
@@ -68,7 +68,7 @@ describe ActiveReport::Record do
 
   context 'export to csv except values for an' do
     it 'array of records' do
-      hash_type_2.each { |data| Car.create!(data) }
+      hash_type_2.each { |v| Car.create!(v) }
 
       sarr = File.read(multi_except_path)
       ccsv = ActiveReport::Record.export(Car.all,
@@ -90,7 +90,7 @@ describe ActiveReport::Record do
 
   context 'export to csv with headers for an' do
     it 'array of records' do
-      hash_type_2.each { |data| Car.create!(data) }
+      hash_type_2.each { |v| Car.create!(v) }
 
       sarr = File.read(multi_headers_path)
       ccsv = ActiveReport::Record.export(Car.all,
@@ -112,11 +112,11 @@ describe ActiveReport::Record do
 
   context 'export to csv with options for an' do
     it 'array of records' do
-      hash_type_2.each { |data| Car.create!(data) }
+      hash_type_2.each { |v| Car.create!(v) }
 
       sarr = File.read(multi_options_path)
       ccsv = ActiveReport::Record.export(Car.all,
-                                         options: { col_sep: ';' })
+                                         options: options)
 
       expect(ccsv).to eq(sarr)
     end
@@ -126,7 +126,7 @@ describe ActiveReport::Record do
 
       sarr = File.read(solo_options_path)
       ccsv = ActiveReport::Record.export(Car.first,
-                                         options: { col_sep: ';' })
+                                         options: options)
 
       expect(ccsv).to eq(sarr)
     end
@@ -215,7 +215,7 @@ describe ActiveReport::Record do
       ActiveReport::Record.import(multi_headerless_options_path,
                                   model: Car,
                                   headers: header_type_1,
-                                  options: { col_sep: ';' })
+                                  options: options)
 
       expect(Car.count).to eq(3)
     end
@@ -224,7 +224,7 @@ describe ActiveReport::Record do
       ActiveReport::Record.import(solo_headerless_options_path,
                                   model: Car,
                                   headers: header_type_1,
-                                  options: { col_sep: ';' })
+                                  options: options)
 
       expect(Car.count).to eq(1)
     end
