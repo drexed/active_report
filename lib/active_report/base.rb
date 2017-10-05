@@ -3,7 +3,7 @@
 class ActiveReport::Base
 
   def csv_options
-    ActiveReport.configuration.csv_options.dup
+    ActiveReport.configuration.csv_options
   end
 
   def csv_force_encoding?

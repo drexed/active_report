@@ -10,7 +10,7 @@ module ActiveReport
       @only = munge(only)
       @except = munge(except)
       @headers = headers
-      @options = csv_options.merge!(options)
+      @options = csv_options.merge(options)
     end
 
     def self.export(datum, only: nil, except: nil, headers: nil, options: {})
