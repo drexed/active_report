@@ -19,7 +19,6 @@ class ActiveReport::Base
 
   private
 
-  # rubocop:disable Performance/StringReplacement
   def encode_to_utf8(line)
     line.map do |chr|
       next if chr.nil?
@@ -28,7 +27,6 @@ class ActiveReport::Base
       chr.encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
     end
   end
-  # rubocop:enable Performance/StringReplacement
 
   def evaluate?
     value = @@evaluate
