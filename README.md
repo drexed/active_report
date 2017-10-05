@@ -35,7 +35,7 @@ Or install it yourself as:
 `../config/initalizers/active_report.rb`
 
 ```ruby
-ActiveReport::Settings.configure do |config|
+ActiveReport.configure do |config|
   config.force_encoding = true
   config.options = { encoding: 'UTF-8' }
 end

@@ -12,7 +12,7 @@ class ActiveReport::Base
   private
 
   def duplicate_options
-    ActiveReport::Settings.config.options.dup
+    ActiveReport.configuration.options.dup
   end
 
   # rubocop:disable Performance/StringReplacement
@@ -48,7 +48,7 @@ class ActiveReport::Base
   end
 
   def force_encoding?
-    ActiveReport::Settings.config.force_encoding
+    ActiveReport.configuration.force_encoding
   end
 
   def humanize(object)
