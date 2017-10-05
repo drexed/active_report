@@ -7,9 +7,9 @@ module ActiveReport
 
     def initialize(datum, only: nil, except: nil, headers: nil, options: {})
       @datum = datum
-      @except = except
+      @only = munge(only)
+      @except = munge(except)
       @headers = headers
-      @only = only
       @options = duplicate_options.merge!(options)
     end
 
@@ -25,36 +25,34 @@ module ActiveReport
 
     def export
       @datum = munge(@datum)
-      @only = munge(@only)
-      @except = munge(@except)
 
       CSV.generate(@options) do |csv|
-        csv << (@headers || (filter_first(@datum) || @datum.first).keys.map { |hdr| humanize(hdr) })
-        @datum.lazy.each { |data| csv << (filter(data) || data).values }
+        csv << (@headers || filter_humanize_keys(@datum))
+        @datum.lazy.each { |data| csv << filter_values(data) }
       end
     end
 
     def import
-      @only = munge(@only)
-      @except = munge(@except)
+      array = []
+      line = 0
 
-      datum = []
-      CSV.foreach(@datum, @options).lazy.with_index do |data, line|
+      CSV.foreach(@datum, @options) do |data|
         data = encode_to_utf8(data) if force_encoding?
 
         if @headers.nil? && line.zero?
           @headers = data
         else
           subdata = {}
-          @headers.lazy.each_with_index { |header, idx| subdata.store(header.to_s, data[idx]) }
+          @headers.lazy.each_with_index { |header, idx| subdata[header.to_s] = data[idx] }
           filter(subdata)
-          datum.push(subdata)
+          array.push(subdata)
         end
+
+        line += 1
       end
 
-      datum = datum.first if datum.size == 1
-      datum = metatransform(datum)
-      datum
+      array = array.first if array.size == 1
+      metatransform(array)
     end
 
   end

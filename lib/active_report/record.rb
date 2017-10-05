@@ -37,8 +37,8 @@ module ActiveReport
       @except = munge(@except).map(&:to_s)
 
       CSV.generate(@options) do |csv|
-        csv << (@headers || (filter_first(@datum) || @datum.first).keys.map { |hdr| humanize(hdr) })
-        @datum.lazy.each { |data| csv << (filter(data) || data).values }
+        csv << (@headers || filter_humanize_keys(@datum))
+        @datum.lazy.each { |data| csv << filter_values(data) }
       end
     end
 

@@ -143,4 +143,32 @@ class ActiveReport::Base
     datum.first.is_a?(Array) ? datum : merge(datum)
   end
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  def filter_values(datum)
+    array = []
+    (filter(datum) || datum).each_value { |val| array << val }
+    array
+  end
+
+  def filter_humanize_keys(datum)
+    array = []
+    (filter_first(datum) || datum.first).each_key { |key| array << humanize(key) }
+    array
+  end
+
 end
