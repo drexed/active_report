@@ -9,10 +9,10 @@ module ActiveReport
 
     def initialize(datum, model: nil, only: nil, except: nil, headers: nil, options: {})
       @datum = datum
-      @except = except
-      @headers = headers
       @model = model
-      @only = only
+      @only = munge(only)
+      @except = munge(except)
+      @headers = headers
       @options = csv_options.merge(options)
     end
 
@@ -33,8 +33,8 @@ module ActiveReport
                  merge(@datum.attributes)
                end
 
-      @only = munge(@only).map(&:to_s)
-      @except = munge(@except).map(&:to_s)
+      @only.map!(&:to_s)
+      @except.map!(&:to_s)
 
       CSV.generate(@options) do |csv|
         csv << (@headers || filter_humanize_keys(@datum))
@@ -50,15 +50,13 @@ module ActiveReport
 
       @datum = ActiveReport::Hash.import(@datum, headers: @headers, options: @options)
       @datum = munge(@datum)
-      @only = munge(@only)
-      @except = munge(@except)
 
       @datum.lazy.each do |data|
         params = {}
 
         data.lazy.each do |key, value|
-          key = key.to_s.downcase.tr(' ', '_').tr('-', '_').to_sym
-          params.store(key, value)
+          key = key.to_s.downcase.gsub(/ |-/, '_').to_sym
+          params[key] = value
         end
 
         filter(params)
