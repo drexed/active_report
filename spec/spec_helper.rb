@@ -16,7 +16,31 @@ Dir.glob(spec_support_path.join('models/*.rb'))
    .each { |f| autoload(File.basename(f).chomp('.rb').camelcase.intern, f) }
    .each { |f| require(f) }
 
+module LetManager
+ extend RSpec::SharedContext
+
+ let(:multi_headerless_options_path) { 'spec/support/csv/multi_headerless_options.csv' }
+ let(:multi_headerless_path) { 'spec/support/csv/multi_headerless.csv' }
+ let(:multi_headers_path) { 'spec/support/csv/multi_headers.csv' }
+ let(:multi_options_path) { 'spec/support/csv/multi_options.csv' }
+ let(:multi_except_path) { 'spec/support/csv/multi_except.csv' }
+ let(:multi_only_path) { 'spec/support/csv/multi_only.csv' }
+ let(:multi_all_path) { 'spec/support/csv/multi_all.csv' }
+ let(:solo_headerless_options_path) { 'spec/support/csv/solo_headerless_options.csv' }
+ let(:solo_headerless_path) { 'spec/support/csv/solo_headerless.csv' }
+ let(:solo_headers_path) { 'spec/support/csv/solo_headers.csv' }
+ let(:solo_options_path) { 'spec/support/csv/solo_options.csv' }
+ let(:solo_except_path) { 'spec/support/csv/solo_except.csv' }
+ let(:solo_only_path) { 'spec/support/csv/solo_only.csv' }
+ let(:solo_all_path) { 'spec/support/csv/solo_all.csv' }
+ let(:options) do
+   { col_sep: ';' }
+ end
+end
+
 RSpec.configure do |config|
+  config.include LetManager
+
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)

@@ -3,15 +3,6 @@
 require 'spec_helper'
 
 describe ActiveReport::Array do
-  let(:multi_headerless_path) { 'spec/support/csv/multi_headerless.csv' }
-  let(:multi_headers_path) { 'spec/support/csv/multi_headers.csv' }
-  let(:multi_options_path) { 'spec/support/csv/multi_options.csv' }
-  let(:solo_headerless_path) { 'spec/support/csv/solo_headerless.csv' }
-  let(:solo_headers_path) { 'spec/support/csv/solo_headers.csv' }
-  let(:solo_options_path) { 'spec/support/csv/solo_options.csv' }
-  let(:options) do
-    { col_sep: ';' }
-  end
   let(:header_type_1) do
     ['Id', 'Name', 'Speed', 'Hp', 'Crash safety rated', 'Created at']
   end
@@ -58,14 +49,16 @@ describe ActiveReport::Array do
   context 'export to csv with headers for an' do
     it 'array of arrays' do
       sarr = File.read(multi_headers_path)
-      ccsv = ActiveReport::Array.export(array_type_3, headers: header_type_2)
+      ccsv = ActiveReport::Array.export(array_type_3,
+                                        headers: header_type_2)
 
       expect(ccsv).to eq(sarr)
     end
 
     it 'array' do
       sarr = File.read(solo_headers_path)
-      ccsv = ActiveReport::Array.export(array_type_1, headers: header_type_2)
+      ccsv = ActiveReport::Array.export(array_type_1,
+                                        headers: header_type_2)
 
       expect(ccsv).to eq(sarr)
     end
@@ -74,14 +67,18 @@ describe ActiveReport::Array do
   context 'export to csv with options for an' do
     it 'array of arrays' do
       sarr = File.read(multi_options_path)
-      ccsv = ActiveReport::Array.export(array_type_3, headers: header_type_1, options: options)
+      ccsv = ActiveReport::Array.export(array_type_3,
+                                        headers: header_type_1,
+                                        options: options)
 
       expect(ccsv).to eq(sarr)
     end
 
     it 'array' do
       sarr = File.read(solo_options_path)
-      ccsv = ActiveReport::Array.export(array_type_1, headers: header_type_1, options: options)
+      ccsv = ActiveReport::Array.export(array_type_1,
+                                        headers: header_type_1,
+                                        options: options)
 
       expect(ccsv).to eq(sarr)
     end
@@ -115,25 +112,29 @@ describe ActiveReport::Array do
 
   context 'import csv with headers returns an' do
     it 'array of arrays' do
-      carr = ActiveReport::Array.import(multi_headerless_path, headers: header_type_1)
+      carr = ActiveReport::Array.import(multi_headerless_path,
+                                        headers: header_type_1)
 
       expect(carr).to eq(array_type_3.dup.unshift(header_type_1))
     end
 
     it 'evaluated array of arrays' do
-      carr = ActiveReport::Array.evaluate.import(multi_headerless_path, headers: header_type_1)
+      carr = ActiveReport::Array.evaluate.import(multi_headerless_path,
+                                                 headers: header_type_1)
 
       expect(carr).to eq(array_type_4.dup.unshift(header_type_1))
     end
 
     it 'array' do
-      carr = ActiveReport::Array.import(solo_headerless_path, headers: header_type_1)
+      carr = ActiveReport::Array.import(solo_headerless_path,
+                                        headers: header_type_1)
 
       expect(carr).to eq([].push(header_type_1).push(array_type_1))
     end
 
     it 'evaluated array' do
-      carr = ActiveReport::Array.evaluate.import(solo_headerless_path, headers: header_type_1)
+      carr = ActiveReport::Array.evaluate.import(solo_headerless_path,
+                                                 headers: header_type_1)
 
       expect(carr).to eq([].push(header_type_1).push(array_type_2))
     end
@@ -141,25 +142,29 @@ describe ActiveReport::Array do
 
   context 'import csv with options returns an' do
     it 'array of arrays' do
-      carr = ActiveReport::Array.import(multi_options_path, options: options)
+      carr = ActiveReport::Array.import(multi_options_path,
+                                        options: options)
 
       expect(carr).to eq([].push(header_type_1).concat(array_type_3))
     end
 
     it 'evaluated array of arrays' do
-      carr = ActiveReport::Array.evaluate.import(multi_options_path, options: options)
+      carr = ActiveReport::Array.evaluate.import(multi_options_path,
+                                                 options: options)
 
       expect(carr).to eq([].push(header_type_1).concat(array_type_4))
     end
 
     it 'array' do
-      carr = ActiveReport::Array.import(solo_options_path, options: options)
+      carr = ActiveReport::Array.import(solo_options_path,
+                                        options: options)
 
       expect(carr).to eq([].push(header_type_1).push(array_type_1))
     end
 
     it 'evaluated array' do
-      carr = ActiveReport::Array.evaluate.import(solo_options_path, options: options)
+      carr = ActiveReport::Array.evaluate.import(solo_options_path,
+                                                 options: options)
 
       expect(carr).to eq([].push(header_type_1).push(array_type_2))
     end
