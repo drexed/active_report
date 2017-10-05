@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ActiveRecord::Schema.define(version: 1) do
   create_table :cars, force: :cascade do |t|
     t.string :name

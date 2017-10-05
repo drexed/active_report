@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 require 'json'
+
 class ActiveReport::Record < ActiveReport::Base
 
   attr_accessor :datum, :model, :only, :except, :headers, :options

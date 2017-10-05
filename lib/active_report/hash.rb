@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ActiveReport::Hash < ActiveReport::Base
 
   attr_accessor :datum, :only, :except, :headers, :options

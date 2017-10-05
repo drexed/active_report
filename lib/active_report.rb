@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'csv'
 
 %w[version settings base array hash record].each do |file_name|

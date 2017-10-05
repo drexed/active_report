@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ActiveReport::Array < ActiveReport::Base
 
   attr_accessor :datum, :headers, :options
