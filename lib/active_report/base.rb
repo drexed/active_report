@@ -2,6 +2,8 @@
 
 class ActiveReport::Base
 
+  @@evaluate = false
+
   def csv_options
     ActiveReport.configuration.csv_options
   end
@@ -9,24 +11,6 @@ class ActiveReport::Base
   def csv_force_encoding?
     ActiveReport.configuration.csv_force_encoding
   end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  @@evaluate = false
 
   def self.evaluate(value = true)
     @@evaluate = value
@@ -39,7 +23,8 @@ class ActiveReport::Base
   def encode_to_utf8(line)
     line.map do |chr|
       next if chr.nil?
-      chr.gsub!(/"/, '')
+
+      chr = chr.tr('"', '')
       chr.encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
     end
   end
@@ -51,15 +36,6 @@ class ActiveReport::Base
     value
   end
 
-
-
-
-
-
-
-
-
-
   def filter(object)
     if @only.empty?
       return if @except.empty?
@@ -69,43 +45,13 @@ class ActiveReport::Base
     end
   end
 
-  def filter_first(object)
-    if @only.empty?
-      return if @except.empty?
-      object.first.delete_if { |key, _| @except.include?(key) }
-    else
-      object.first.keep_if { |key, _| @only.include?(key) }
-    end
-  end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   def humanize(object)
     object.to_s.tr('_', ' ').capitalize
   end
 
   def merge(object)
-    [].push(object).compact
+    [object].compact
   end
-
-
-
-
-
-
 
   # rubocop:disable Security/Eval, Lint/RescueException
   def metaform(value)
@@ -139,18 +85,10 @@ class ActiveReport::Base
     end
   end
 
-
-
-
-
   def metatransform(datum)
     return if datum.empty?
     evaluate? ? metamorph(datum) : datum
   end
-
-
-
-
 
   def munge(datum)
     datum.is_a?(Array) ? datum : merge(datum)
@@ -160,22 +98,6 @@ class ActiveReport::Base
     datum.first.is_a?(Array) ? datum : merge(datum)
   end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   def filter_values(datum)
     array = []
     (filter(datum) || datum).each_value { |val| array << val }
@@ -184,7 +106,7 @@ class ActiveReport::Base
 
   def filter_humanize_keys(datum)
     array = []
-    (filter_first(datum) || datum.first).each_key { |key| array << humanize(key) }
+    (filter(datum.first) || datum.first).each_key { |key| array << humanize(key) }
     array
   end
 
