@@ -1,24 +1,16 @@
 # frozen_string_literal: true
 
-require 'active_record'
-require 'active_report'
-require 'pathname'
-require 'generator_spec'
-require 'database_cleaner'
-
-module Rails
-  def self.env
-    'test'
-  end
+%w[active_record active_report pathname generator_spec database_cleaner].each do |file_name|
+  require file_name
 end
 
 spec_support_path = Pathname.new(File.expand_path('../spec/support', File.dirname(__FILE__)))
 spec_tmp_path = Pathname.new(File.expand_path('../spec/lib/tmp', File.dirname(__FILE__)))
 
 ActiveRecord::Base.configurations = YAML::load_file(spec_support_path.join('config/database.yml'))
-ActiveRecord::Base.establish_connection
+ActiveRecord::Base.establish_connection(:test)
 
-load(spec_support_path.join('db/schema.rb')) if File.exist?(spec_support_path.join('db/schema.rb'))
+load(spec_support_path.join('db/schema.rb'))
 
 Dir.glob(spec_support_path.join('models/*.rb'))
    .each { |f| autoload(File.basename(f).chomp('.rb').camelcase.intern, f) }

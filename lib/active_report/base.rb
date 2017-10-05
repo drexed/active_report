@@ -31,9 +31,19 @@ class ActiveReport::Base
     value
   end
 
+
+
+
+
+
+
+
+
+
   def filter(object)
     if @only.empty?
-      object.delete_if { |key, _| @except.include?(key) } unless @except.empty?
+      return if @except.empty?
+      object.delete_if { |key, _| @except.include?(key) }
     else
       object.keep_if { |key, _| @only.include?(key) }
     end
@@ -41,15 +51,30 @@ class ActiveReport::Base
 
   def filter_first(object)
     if @only.empty?
-      object.first.delete_if { |key, _| @except.include?(key) } unless @except.empty?
+      return if @except.empty?
+      object.first.delete_if { |key, _| @except.include?(key) }
     else
       object.first.keep_if { |key, _| @only.include?(key) }
     end
   end
 
+
+
+
+
+
+
+
+
   def force_encoding?
     ActiveReport.configuration.force_encoding
   end
+
+
+
+
+
+
 
   def humanize(object)
     object.to_s.tr('_', ' ').capitalize
@@ -59,6 +84,12 @@ class ActiveReport::Base
     [].push(object).compact
   end
 
+
+
+
+
+
+
   # rubocop:disable Security/Eval, Lint/RescueException
   def metaform(value)
     value.nil? ? value : eval(value)
@@ -67,34 +98,49 @@ class ActiveReport::Base
   end
   # rubocop:enable Security/Eval, Lint/RescueException
 
-  def metamorph(datum)
-    case datum.class.name
-    when 'Array'
-      if datum.first.is_a?(Array)
-        datum.map { |arr| arr.map { |val| metaform(val) } }
-      elsif datum.first.is_a?(Hash)
-        datum.map { |hsh| hsh.each { |key, val| hsh.store(key, metaform(val)) } }
-      else
-        datum.map { |val| metaform(val) }
-      end
-    when 'Hash'
-      datum.each { |key, val| datum.store(key, metaform(val)) }
-    else
-      metaform(datum)
+  def metaform_array(datum)
+    datum.map { |val| metaform(val) }
+  end
+
+  def metaform_hash(datum)
+    datum.lazy.each { |key, val| datum[key] = metaform(val) }
+  end
+
+  def metamorph_array(datum)
+    case datum.first.class.name
+    when 'Array' then datum.map { |arr| metaform_array(arr) }
+    when 'Hash' then datum.map { |hsh| metaform_hash(hsh) }
+    else metaform_array(datum)
     end
   end
+
+  def metamorph(datum)
+    case datum.class.name
+    when 'Array' then metamorph_array(datum)
+    when 'Hash' then metaform_hash(datum)
+    else metaform(datum)
+    end
+  end
+
+
+
+
 
   def metatransform(datum)
     return if datum.empty?
     evaluate? ? metamorph(datum) : datum
   end
 
-  def munge(object)
-    object.is_a?(Array) ? object : merge(object)
+
+
+
+
+  def munge(datum)
+    datum.is_a?(Array) ? datum : merge(datum)
   end
 
-  def munge_first(object)
-    object.first.is_a?(Array) ? object : merge(object)
+  def munge_first(datum)
+    datum.first.is_a?(Array) ? datum : merge(datum)
   end
 
 end
