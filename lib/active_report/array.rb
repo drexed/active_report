@@ -26,7 +26,6 @@ module ActiveReport
 
       CSV.generate(@options) do |csv|
         csv << @headers unless @headers.nil?
-
         @datum.lazy.each { |cell| csv << cell }
       end
     end
