@@ -2,6 +2,30 @@
 
 class ActiveReport::Base
 
+  def csv_options
+    ActiveReport.configuration.csv_options.dup
+  end
+
+  def csv_force_encoding?
+    ActiveReport.configuration.csv_force_encoding
+  end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   @@evaluate = false
 
   def self.evaluate(value = true)
@@ -10,10 +34,6 @@ class ActiveReport::Base
   end
 
   private
-
-  def duplicate_options
-    ActiveReport.configuration.options.dup
-  end
 
   # rubocop:disable Performance/StringReplacement
   def encode_to_utf8(line)
@@ -66,9 +86,6 @@ class ActiveReport::Base
 
 
 
-  def force_encoding?
-    ActiveReport.configuration.force_encoding
-  end
 
 
 

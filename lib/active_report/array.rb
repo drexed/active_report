@@ -3,43 +3,43 @@
 module ActiveReport
   class Array < ActiveReport::Base
 
-    attr_accessor :datum, :headers, :options
+    attr_accessor :data, :headers, :options
 
-    def initialize(datum, headers: nil, options: {})
-      @datum = datum
+    def initialize(data, headers: nil, options: {})
+      @data = data
       @headers = headers
-      @options = duplicate_options.merge!(options)
+      @options = csv_options.merge(options)
     end
 
-    def self.export(datum, headers: nil, options: {})
-      klass = new(datum, headers: headers, options: options)
+    def self.export(data, headers: nil, options: {})
+      klass = new(data, headers: headers, options: options)
       klass.export
     end
 
-    def self.import(datum, headers: nil, options: {})
-      klass = new(datum, headers: headers, options: options)
+    def self.import(data, headers: nil, options: {})
+      klass = new(data, headers: headers, options: options)
       klass.import
     end
 
     def export
-      @datum = munge_first(@datum)
+      @data = munge_first(@data)
 
       CSV.generate(@options) do |csv|
         csv << @headers unless @headers.nil?
-        @datum.lazy.each { |cell| csv << cell }
+        @data.lazy.each { |cell| csv << cell }
       end
     end
 
     def import
-      datum = merge(@headers)
+      array = merge(@headers)
 
-      CSV.foreach(@datum, @options) do |data|
-        data = encode_to_utf8(data) if force_encoding?
-        datum.push(data)
+      CSV.foreach(@data, @options) do |row|
+        row = encode_to_utf8(row) if csv_force_encoding?
+        array.push(row)
       end
 
-      datum = datum.flatten if datum.size < 2
-      metatransform(datum)
+      array = array.flatten if array.size < 2
+      metatransform(array)
     end
 
   end

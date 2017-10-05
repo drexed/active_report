@@ -3,11 +3,11 @@
 module ActiveReport
   class Configuration
 
-    attr_accessor :force_encoding, :options
+    attr_accessor :csv_force_encoding, :csv_options
 
     def initialize
-      @force_encoding = true
-      @options = { encoding: 'UTF-8' }
+      @csv_force_encoding = true
+      @csv_options = { encoding: 'UTF-8' }
     end
 
   end
