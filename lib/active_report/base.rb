@@ -85,7 +85,7 @@ class ActiveReport::Base
   end
 
   def metatransform(datum)
-    return(nil) if datum.empty?
+    return if datum.empty?
     evaluate? ? metamorph(datum) : datum
   end
 
