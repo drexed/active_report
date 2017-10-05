@@ -3,18 +3,6 @@
 require 'spec_helper'
 
 describe ActiveReport::Hash do
-  let(:only_except_1) do
-    ['Name']
-  end
-  let(:only_except_2) do
-    ['Id', 'Name']
-  end
-  let(:header_type_1) do
-    ['Id', 'Name', 'Speed', 'Hp', 'Crash safety rated', 'Created at']
-  end
-  let(:header_type_2) do
-    ['No.', 'Model', 'Speed', 'Horse Power', 'Crash Safety Rated', 'Driven On']
-  end
   let(:hash_type_1) do
     {
       'Id' => '1', 'Name' => 'Porche', 'Speed' => '225', 'Hp' => '430',
