@@ -53,7 +53,7 @@ class ActiveReport::Base
 
   # rubocop:disable Security/Eval, Lint/RescueException
   def metaform(value)
-    value.nil? ? value : eval(value)
+    eval(value.to_s)
   rescue Exception
     value
   end
