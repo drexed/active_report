@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'activerecord-import'
+require 'activerecord-import/base'
+require "activerecord-import/active_record/adapters/#{ActiveReport.configuration.import_adapter}"
 require 'json'
 
 class ActiveReport::Record < ActiveReport::Base
@@ -50,6 +53,7 @@ class ActiveReport::Record < ActiveReport::Base
     @datum = ActiveReport::Hash.import(@datum, headers: @headers, options: @options)
     @datum = munge(@datum)
 
+    records = []
     @datum.lazy.each do |data|
       params = {}
 
@@ -60,8 +64,10 @@ class ActiveReport::Record < ActiveReport::Base
 
       filter(params)
       params.delete(:id)
-      @model.create(params)
+      records << params
     end
+
+    @model.import(records, import_options)
   end
 
 end

@@ -12,6 +12,14 @@ class ActiveReport::Base
     ActiveReport.configuration.csv_force_encoding
   end
 
+  def import_adapter
+    ActiveReport.configuration.import_adapter
+  end
+
+  def import_options
+    ActiveReport.configuration.import_options
+  end
+
   def self.evaluate(value = true)
     @@evaluate = value
     self
