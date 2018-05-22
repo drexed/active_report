@@ -50,6 +50,7 @@ end
 **Options:**
  * headers: column titles of CSV data
  * options: CSV options to be use on generation
+ * stream:  generate an enumerator
 
 ```ruby
 @list = [
@@ -82,6 +83,7 @@ ActiveReport::Array.import('sample.csv', headers: ['ID', 'Task', 'Completed'], o
  * except:  keys of pairs not to be used on generation
  * headers: column titles of CSV data
  * options: CSV options to be use on generation
+ * stream:  generate an enumerator
 
 ```ruby
 @list = [
@@ -116,6 +118,7 @@ ActiveReport::Hash.import('sample.csv', except: :completed, headers: ['ID', 'Tas
  * except:  columns not to be used on generation
  * headers: column titles of CSV data
  * options: CSV options to be use on generation
+ * stream:  generate an enumerator
 
 ```ruby
 @list = [
