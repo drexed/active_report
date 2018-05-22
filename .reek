@@ -28,6 +28,7 @@ TooManyStatements:
   exclude:
     - 'ActiveReport::Base#metamorph'
     - 'ActiveReport::Hash#import'
+    - 'ActiveReport::Record#export'
     - 'ActiveReport::Record#import'
 UncommunicativeMethodName:
   exclude:

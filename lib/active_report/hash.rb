@@ -2,20 +2,21 @@
 
 class ActiveReport::Hash < ActiveReport::Base
 
-  attr_accessor :datum, :only, :except, :headers, :options
-
-  def initialize(datum, only: nil, except: nil, headers: nil, options: {})
+  def initialize(datum, only: nil, except: nil, headers: nil, options: {}, stream: false)
     @datum = datum
     @only = munge(only)
     @except = munge(except)
     @headers = headers
     @options = csv_options.merge(options)
+    @stream = stream
   end
 
-  def self.export(datum, only: nil, except: nil, headers: nil, options: {})
-    klass = new(datum, only: only, except: except, headers: headers, options: options)
+  # rubocop:disable Metrics/LineLength
+  def self.export(datum, only: nil, except: nil, headers: nil, options: {}, stream: false)
+    klass = new(datum, only: only, except: except, headers: headers, options: options, stream: stream)
     klass.export
   end
+  # rubocop:enable Metrics/LineLength
 
   def self.import(datum, only: nil, except: nil, headers: nil, options: {})
     klass = new(datum, only: only, except: except, headers: headers, options: options)
@@ -24,10 +25,18 @@ class ActiveReport::Hash < ActiveReport::Base
 
   def export
     @datum = munge(@datum)
+    @headers = (@headers || filter_humanize_keys(@datum))
 
-    CSV.generate(@options) do |csv|
-      csv << (@headers || filter_humanize_keys(@datum))
-      @datum.lazy.each { |data| csv << filter_values(data) }
+    if @stream == true
+      Enumerator.new do |csv|
+        csv << @headers
+        @data.each { |row| csv << filter_values(row) }
+      end
+    else
+      CSV.generate(@options) do |csv|
+        csv << @headers
+        @datum.each { |row| csv << filter_values(row) }
+      end
     end
   end
 
@@ -42,7 +51,7 @@ class ActiveReport::Hash < ActiveReport::Base
         @headers = data
       else
         subdata = {}
-        @headers.lazy.each_with_index { |header, idx| subdata[header.to_s] = data[idx] }
+        @headers.each_with_index { |header, idx| subdata[header.to_s] = data[idx] }
         filter(subdata)
         array.push(subdata)
       end

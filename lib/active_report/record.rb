@@ -9,19 +9,22 @@ class ActiveReport::Record < ActiveReport::Base
 
   attr_accessor :datum, :model, :only, :except, :headers, :options
 
-  def initialize(datum, model: nil, only: nil, except: nil, headers: nil, options: {})
+  # rubocop:disable Metrics/LineLength
+  def initialize(datum, model: nil, only: nil, except: nil, headers: nil, options: {}, stream: false)
     @datum = datum
     @model = model
     @only = munge(only)
     @except = munge(except)
     @headers = headers
     @options = csv_options.merge(options)
+    @stream = stream
   end
 
-  def self.export(datum, only: nil, except: nil, headers: nil, options: {})
-    klass = new(datum, only: only, except: except, headers: headers, options: options)
+  def self.export(datum, only: nil, except: nil, headers: nil, options: {}, stream: false)
+    klass = new(datum, only: only, except: except, headers: headers, options: options, stream: stream)
     klass.export
   end
+  # rubocop:enable Metrics/LineLength
 
   def self.import(datum, only: nil, except: nil, headers: nil, options: {}, model: nil)
     klass = new(datum, only: only, except: except, headers: headers, options: options, model: model)
@@ -37,10 +40,18 @@ class ActiveReport::Record < ActiveReport::Base
 
     @only.map!(&:to_s)
     @except.map!(&:to_s)
+    @headers = (@headers || filter_humanize_keys(@datum))
 
-    CSV.generate(@options) do |csv|
-      csv << (@headers || filter_humanize_keys(@datum))
-      @datum.lazy.each { |data| csv << filter_values(data) }
+    if @stream == true
+      Enumerator.new do |csv|
+        csv << @headers
+        @data.each { |row| csv << filter_values(row) }
+      end
+    else
+      CSV.generate(@options) do |csv|
+        csv << @headers
+        @datum.each { |row| csv << filter_values(row) }
+      end
     end
   end
 
@@ -54,10 +65,10 @@ class ActiveReport::Record < ActiveReport::Base
     @datum = munge(@datum)
 
     records = []
-    @datum.lazy.each do |data|
+    @datum.each do |data|
       params = {}
 
-      data.lazy.each do |key, value|
+      data.each do |key, value|
         key = key.to_s.downcase.gsub(/ |-/, '_').to_sym
         params[key] = value
       end

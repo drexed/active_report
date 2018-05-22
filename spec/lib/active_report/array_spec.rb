@@ -30,6 +30,14 @@ describe ActiveReport::Array do
     ]
   end
 
+  context 'export stream' do
+    it 'returns true' do
+      ccsv = ActiveReport::Array.export(array_type_3, stream: true)
+
+      expect(ccsv.is_a?(Enumerator)).to eq(true)
+    end
+  end
+
   context 'export to csv without headers for an' do
     it 'array of arrays' do
       sarr = File.read(multi_headerless_path)

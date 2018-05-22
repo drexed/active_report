@@ -72,7 +72,7 @@ class ActiveReport::Base
   end
 
   def metaform_hash(datum)
-    datum.lazy.each { |key, val| datum[key] = metaform(val) }
+    datum.each { |key, val| datum[key] = metaform(val) }
   end
 
   def metamorph_array(datum)

@@ -48,6 +48,14 @@ describe ActiveReport::Hash do
     ]
   end
 
+  context 'export stream' do
+    it 'returns true' do
+      ccsv = ActiveReport::Hash.export(array_type_1, stream: true)
+
+      expect(ccsv.is_a?(Enumerator)).to eq(true)
+    end
+  end
+
   context 'export to csv all data for an' do
     it 'array of hashes' do
       sarr = File.read(multi_all_path)

@@ -24,6 +24,16 @@ describe ActiveReport::Record do
     ]
   end
 
+  context 'export stream' do
+    it 'returns true' do
+      Car.create!(hash_type_1)
+
+      ccsv = ActiveReport::Record.export(Car.all, stream: true)
+
+      expect(ccsv.is_a?(Enumerator)).to eq(true)
+    end
+  end
+
   context 'export to csv all data for an' do
     it 'array of records' do
       hash_type_2.each { |v| Car.create!(v) }

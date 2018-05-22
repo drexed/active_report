@@ -2,37 +2,43 @@
 
 class ActiveReport::Array < ActiveReport::Base
 
-  attr_accessor :data, :headers, :options
-
-  def initialize(data, headers: nil, options: {})
-    @data = data
+  def initialize(datum, headers: nil, options: {}, stream: false)
+    @datum = datum
     @headers = headers
     @options = csv_options.merge(options)
+    @stream = stream
   end
 
-  def self.export(data, headers: nil, options: {})
-    klass = new(data, headers: headers, options: options)
+  def self.export(datum, headers: nil, options: {}, stream: false)
+    klass = new(datum, headers: headers, options: options, stream: stream)
     klass.export
   end
 
-  def self.import(data, headers: nil, options: {})
-    klass = new(data, headers: headers, options: options)
+  def self.import(datum, headers: nil, options: {})
+    klass = new(datum, headers: headers, options: options)
     klass.import
   end
 
   def export
-    @data = munge_first(@data)
+    @datum = munge_first(@datum)
 
-    CSV.generate(@options) do |csv|
-      csv << @headers unless @headers.nil?
-      @data.lazy.each { |cell| csv << cell }
+    if @stream == true
+      Enumerator.new do |csv|
+        csv << @headers unless @headers.nil?
+        @datum.each { |row| csv << row }
+      end
+    else
+      CSV.generate(@options) do |csv|
+        csv << @headers unless @headers.nil?
+        @datum.each { |row| csv << row }
+      end
     end
   end
 
   def import
     array = merge(@headers)
 
-    CSV.foreach(@data, @options) do |row|
+    CSV.foreach(@datum, @options) do |row|
       row = encode_to_utf8(row) if csv_force_encoding?
       array.push(row)
     end
