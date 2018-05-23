@@ -4,13 +4,12 @@ class ActiveReport::Base
 
   @@evaluate = false
 
-  def initialize(datum, opts = {})
-    @datum = datum
+  def initialize(data, opts = {})
+    @data = data
     @opts = opts
 
     %i[except only].each { |key| @opts[key] = munge(@opts[key]) }
-
-    @opts[:options] = csv_options.merge(@opts[:options] || {})
+    @opts[:options] ||= csv_options
   end
 
   def csv_options
@@ -34,13 +33,13 @@ class ActiveReport::Base
     self
   end
 
-  def self.export(datum, opts = {})
-    klass = new(datum, opts)
+  def self.export(data, opts = {})
+    klass = new(data, opts)
     klass.export
   end
 
-  def self.import(datum, opts = {})
-    klass = new(datum, opts)
+  def self.import(data, opts = {})
+    klass = new(data, opts)
     klass.import
   end
 
@@ -63,7 +62,8 @@ class ActiveReport::Base
 
   def filter(object)
     if @opts[:only].empty?
-      return if @opts[:except].empty?
+      return object if @opts[:except].empty?
+
       object.delete_if { |key, _| @opts[:except].include?(key) }
     else
       object.keep_if { |key, _| @opts[:only].include?(key) }
@@ -72,6 +72,10 @@ class ActiveReport::Base
 
   def humanize(object)
     object.to_s.tr('_', ' ').capitalize
+  end
+
+  def humanize_values(data)
+    data.map { |col| humanize(col) }
   end
 
   def merge(object)
@@ -86,53 +90,49 @@ class ActiveReport::Base
   end
   # rubocop:enable Security/Eval, Lint/RescueException
 
-  def metaform_array(datum)
-    datum.map { |val| metaform(val) }
+  def metaform_array(data)
+    data.map { |val| metaform(val) }
   end
 
-  def metaform_hash(datum)
-    datum.each { |key, val| datum[key] = metaform(val) }
+  def metaform_hash(data)
+    data.each { |key, val| data[key] = metaform(val) }
   end
 
-  def metamorph_array(datum)
-    case datum.first.class.name
-    when 'Array' then datum.map { |arr| metaform_array(arr) }
-    when 'Hash' then datum.map { |hsh| metaform_hash(hsh) }
-    else metaform_array(datum)
+  def metamorph_array(data)
+    case data.first.class.name
+    when 'Array' then data.map { |arr| metaform_array(arr) }
+    when 'Hash' then data.map { |hsh| metaform_hash(hsh) }
+    else metaform_array(data)
     end
   end
 
-  def metamorph(datum)
-    case datum.class.name
-    when 'Array' then metamorph_array(datum)
-    when 'Hash' then metaform_hash(datum)
-    else metaform(datum)
+  def metamorph(data)
+    case data.class.name
+    when 'Array' then metamorph_array(data)
+    when 'Hash' then metaform_hash(data)
+    else metaform(data)
     end
   end
 
-  def metatransform(datum)
-    return if datum.empty?
-    evaluate? ? metamorph(datum) : datum
+  def metatransform(data)
+    return if data.empty?
+    evaluate? ? metamorph(data) : data
   end
 
-  def munge(datum)
-    datum.is_a?(Array) ? datum : merge(datum)
+  def munge(data)
+    data.is_a?(Array) ? data : merge(data)
   end
 
-  def munge_first(datum)
-    datum.first.is_a?(Array) ? datum : merge(datum)
+  def munge_first(data)
+    data.first.is_a?(Array) ? data : merge(data)
   end
 
-  def filter_values(datum)
-    array = []
-    (filter(datum) || datum).each_value { |val| array << val }
-    array
+  def filter_values(data)
+    filter(data).values
   end
 
-  def filter_humanize_keys(datum)
-    array = []
-    (filter(datum.first) || datum.first).each_key { |key| array << humanize(key) }
-    array
+  def filter_humanize_keys(data)
+    filter(data.first).collect { |key, _| humanize(key) }
   end
 
 end

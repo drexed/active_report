@@ -7,44 +7,25 @@ require 'json'
 
 class ActiveReport::Record < ActiveReport::Base
 
-  def self.dump(datum, opts = {})
-    klass = new(datum, opts)
-    klass.dump
-  end
-
-  def dump
-    @opts[:headers] = (@opts[:headers] || @datum.column_names.map { |col| humanize(col) })
-
-    if @opts[:stream] == true
-      Enumerator.new do |csv|
-        csv << CSV.generate_line(@opts[:headers])
-
-        @datum.find_each do |row|
-          csv << CSV.generate_line(filter_values(row.attributes))
-        end
-      end
-    else
-      CSV.generate(@opts[:options]) do |csv|
-        csv << @opts[:headers]
-
-        @datum.find_each do |row|
-          csv << filter_values(row.attributes)
-        end
-      end
-    end
-  end
-
+  # rubocop:disable Metrics/PerceivedComplexity
   def export
-    @datum = if @datum.is_a?(ActiveRecord::Relation)
-               JSON.parse(@datum.to_json).flatten
-             else
-               merge(@datum.attributes)
-             end
-
     %i[except only].each { |key| @opts[key] = @opts[key].map(&:to_s) }
 
-    ActiveReport::Hash.export(@datum, @opts)
+    if !@data.is_a?(ActiveRecord::Relation) && @data.try(:superclass) == ActiveRecord::Base
+      @opts[:headers] = (@opts[:headers] || humanize_values(@data.column_names))
+
+      @opts[:stream] ? export_stream : export_csv
+    else
+      @data = if @data.is_a?(ActiveRecord::Relation)
+                JSON.parse(@data.to_json).flatten
+              else
+                merge(@data.attributes)
+              end
+
+      ActiveReport::Hash.export(@data, @opts)
+    end
   end
+  # rubocop:enable Metrics/PerceivedComplexity
 
   def import
     if @opts[:model].nil? || (@opts[:model].superclass != ActiveRecord::Base)
@@ -52,11 +33,11 @@ class ActiveReport::Record < ActiveReport::Base
             'Model must be an ActiveRecord::Base object.'
     end
 
-    @datum = ActiveReport::Hash.import(@datum, headers: @opts[:headers], options: @opts[:options])
-    @datum = munge(@datum)
+    @data = ActiveReport::Hash.import(@data, headers: @opts[:headers], options: @opts[:options])
+    @data = munge(@data)
 
     records = []
-    @datum.each do |data|
+    @data.each do |data|
       params = {}
 
       data.each do |key, value|
@@ -70,6 +51,28 @@ class ActiveReport::Record < ActiveReport::Base
     end
 
     @opts[:model].import(records, import_options)
+  end
+
+  private
+
+  def export_csv
+    CSV.generate(@opts[:options]) do |csv|
+      csv << @opts[:headers]
+
+      @data.find_each do |row|
+        csv << filter_values(row.attributes)
+      end
+    end
+  end
+
+  def export_stream
+    Enumerator.new do |csv|
+      csv << CSV.generate_line(@opts[:headers])
+
+      @data.find_each do |row|
+        csv << CSV.generate_line(filter_values(row.attributes))
+      end
+    end
   end
 
 end

@@ -3,30 +3,19 @@
 class ActiveReport::Hash < ActiveReport::Base
 
   def export
-    @datum = munge(@datum)
-    @opts[:headers] = (@opts[:headers] || filter_humanize_keys(@datum))
+    @data = munge(@data)
+    @opts[:headers] = (@opts[:headers] || filter_humanize_keys(@data))
 
-    if @opts[:stream] == true
-      Enumerator.new do |csv|
-        csv << CSV.generate_line(@opts[:headers])
-        @datum.each { |row| csv << CSV.generate_line(filter_values(row)) }
-      end
-    else
-      CSV.generate(@opts[:options]) do |csv|
-        csv << @opts[:headers]
-        @datum.each { |row| csv << filter_values(row) }
-      end
-    end
+    @opts[:stream] ? export_stream : export_csv
   end
 
   def import
     array = []
-    line = 0
 
-    CSV.foreach(@datum, @opts[:options]) do |data|
+    CSV.foreach(@data, @opts[:options]).with_index do |data, i|
       data = encode_to_utf8(data) if csv_force_encoding?
 
-      if @opts[:headers].nil? && line.zero?
+      if @opts[:headers].nil? && i.zero?
         @opts[:headers] = data
       else
         subdata = {}
@@ -34,12 +23,28 @@ class ActiveReport::Hash < ActiveReport::Base
         filter(subdata)
         array.push(subdata)
       end
-
-      line += 1
     end
 
     array = array.first if array.size == 1
     metatransform(array)
+  end
+
+  private
+
+  def export_csv
+    CSV.generate(@opts[:options]) do |csv|
+      csv << @opts[:headers]
+
+      @data.each { |row| csv << filter_values(row) }
+    end
+  end
+
+  def export_stream
+    Enumerator.new do |csv|
+      csv << CSV.generate_line(@opts[:headers])
+
+      @data.each { |row| csv << CSV.generate_line(filter_values(row)) }
+    end
   end
 
 end

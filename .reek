@@ -33,5 +33,8 @@ TooManyStatements:
 UncommunicativeMethodName:
   exclude:
     - 'ActiveReport::Base#encode_to_utf8'
+UncommunicativeVariableName:
+  exclude:
+    - 'ActiveReport::Hash#import'
 UtilityFunction:
   enabled: false
