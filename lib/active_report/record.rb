@@ -7,8 +7,6 @@ require 'json'
 
 class ActiveReport::Record < ActiveReport::Base
 
-  attr_accessor :datum, :model, :only, :except, :headers, :options
-
   # rubocop:disable Metrics/LineLength
   def initialize(datum, model: nil, only: nil, except: nil, headers: nil, options: {}, stream: false)
     @datum = datum
@@ -38,21 +36,12 @@ class ActiveReport::Record < ActiveReport::Base
                merge(@datum.attributes)
              end
 
-    @only.map!(&:to_s)
-    @except.map!(&:to_s)
-    @headers = (@headers || filter_humanize_keys(@datum))
-
-    if @stream == true
-      Enumerator.new do |csv|
-        csv << CSV.generate_line(@headers)
-        @data.each { |row| csv << CSV.generate_line(filter_values(row)) }
-      end
-    else
-      CSV.generate(@options) do |csv|
-        csv << @headers
-        @datum.each { |row| csv << filter_values(row) }
-      end
-    end
+    ActiveReport::Hash.export(@datum,
+                              only: @only.map(&:to_s),
+                              except: @except.map(&:to_s),
+                              headers: @headers,
+                              options: @options,
+                              stream: @stream)
   end
 
   def import

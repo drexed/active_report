@@ -30,7 +30,7 @@ class ActiveReport::Hash < ActiveReport::Base
     if @stream == true
       Enumerator.new do |csv|
         csv << CSV.generate_line(@headers)
-        @data.each { |row| csv << CSV.generate_line(filter_values(row)) }
+        @datum.each { |row| csv << CSV.generate_line(filter_values(row)) }
       end
     else
       CSV.generate(@options) do |csv|
