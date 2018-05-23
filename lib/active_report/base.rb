@@ -6,12 +6,11 @@ class ActiveReport::Base
 
   def initialize(datum, opts = {})
     @datum = datum
-    @model = opts[:model]
-    @only = munge(opts[:only])
-    @except = munge(opts[:except])
-    @headers = opts[:headers]
-    @options = csv_options.merge(opts[:options] || {})
-    @stream = opts[:stream] || false
+    @opts = opts
+
+    %i[except only].each { |key| @opts[key] = munge(@opts[key]) }
+
+    @opts[:options] = csv_options.merge(@opts[:options] || {})
   end
 
   def csv_options
@@ -63,11 +62,11 @@ class ActiveReport::Base
   end
 
   def filter(object)
-    if @only.empty?
-      return if @except.empty?
-      object.delete_if { |key, _| @except.include?(key) }
+    if @opts[:only].empty?
+      return if @opts[:except].empty?
+      object.delete_if { |key, _| @opts[:except].include?(key) }
     else
-      object.keep_if { |key, _| @only.include?(key) }
+      object.keep_if { |key, _| @opts[:only].include?(key) }
     end
   end
 

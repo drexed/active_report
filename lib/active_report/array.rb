@@ -4,23 +4,23 @@ class ActiveReport::Array < ActiveReport::Base
 
   def export
     @datum = munge_first(@datum)
-    @datum = @datum.unshift(@headers) unless @headers.nil?
+    @datum = @datum.unshift(@opts[:headers]) unless @opts[:headers].nil?
 
-    if @stream == true
+    if @opts[:stream] == true
       Enumerator.new do |csv|
         @datum.each { |row| csv << CSV.generate_line(row) }
       end
     else
-      CSV.generate(@options) do |csv|
+      CSV.generate(@opts[:options]) do |csv|
         @datum.each { |row| csv << row }
       end
     end
   end
 
   def import
-    array = merge(@headers)
+    array = merge(@opts[:headers])
 
-    CSV.foreach(@datum, @options) do |row|
+    CSV.foreach(@datum, @opts[:options]) do |row|
       row = encode_to_utf8(row) if csv_force_encoding?
       array.push(row)
     end

@@ -4,16 +4,16 @@ class ActiveReport::Hash < ActiveReport::Base
 
   def export
     @datum = munge(@datum)
-    @headers = (@headers || filter_humanize_keys(@datum))
+    @opts[:headers] = (@opts[:headers] || filter_humanize_keys(@datum))
 
-    if @stream == true
+    if @opts[:stream] == true
       Enumerator.new do |csv|
-        csv << CSV.generate_line(@headers)
+        csv << CSV.generate_line(@opts[:headers])
         @datum.each { |row| csv << CSV.generate_line(filter_values(row)) }
       end
     else
-      CSV.generate(@options) do |csv|
-        csv << @headers
+      CSV.generate(@opts[:options]) do |csv|
+        csv << @opts[:headers]
         @datum.each { |row| csv << filter_values(row) }
       end
     end
@@ -23,14 +23,14 @@ class ActiveReport::Hash < ActiveReport::Base
     array = []
     line = 0
 
-    CSV.foreach(@datum, @options) do |data|
+    CSV.foreach(@datum, @opts[:options]) do |data|
       data = encode_to_utf8(data) if csv_force_encoding?
 
-      if @headers.nil? && line.zero?
-        @headers = data
+      if @opts[:headers].nil? && line.zero?
+        @opts[:headers] = data
       else
         subdata = {}
-        @headers.each_with_index { |header, idx| subdata[header.to_s] = data[idx] }
+        @opts[:headers].each_with_index { |header, idx| subdata[header.to_s] = data[idx] }
         filter(subdata)
         array.push(subdata)
       end

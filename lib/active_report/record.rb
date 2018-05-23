@@ -14,21 +14,18 @@ class ActiveReport::Record < ActiveReport::Base
                merge(@datum.attributes)
              end
 
-    ActiveReport::Hash.export(@datum,
-                              only: @only.map(&:to_s),
-                              except: @except.map(&:to_s),
-                              headers: @headers,
-                              options: @options,
-                              stream: @stream)
+    %i[except only].each { |key| @opts[key] = @opts[key].map(&:to_s) }
+
+    ActiveReport::Hash.export(@datum, @opts)
   end
 
   def import
-    if @model.nil? || (@model.superclass != ActiveRecord::Base)
+    if @opts[:model].nil? || (@opts[:model].superclass != ActiveRecord::Base)
       raise ArgumentError,
             'Model must be an ActiveRecord::Base object.'
     end
 
-    @datum = ActiveReport::Hash.import(@datum, headers: @headers, options: @options)
+    @datum = ActiveReport::Hash.import(@datum, headers: @opts[:headers], options: @opts[:options])
     @datum = munge(@datum)
 
     records = []
@@ -45,7 +42,7 @@ class ActiveReport::Record < ActiveReport::Base
       records << params
     end
 
-    @model.import(records, import_options)
+    @opts[:model].import(records, import_options)
   end
 
 end
