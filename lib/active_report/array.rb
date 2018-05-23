@@ -2,34 +2,16 @@
 
 class ActiveReport::Array < ActiveReport::Base
 
-  def initialize(datum, headers: nil, options: {}, stream: false)
-    @datum = datum
-    @headers = headers
-    @options = csv_options.merge(options)
-    @stream = stream
-  end
-
-  def self.export(datum, headers: nil, options: {}, stream: false)
-    klass = new(datum, headers: headers, options: options, stream: stream)
-    klass.export
-  end
-
-  def self.import(datum, headers: nil, options: {})
-    klass = new(datum, headers: headers, options: options)
-    klass.import
-  end
-
   def export
     @datum = munge_first(@datum)
+    @datum = @datum.unshift(@headers) unless @headers.nil?
 
     if @stream == true
       Enumerator.new do |csv|
-        csv << CSV.generate_line(@headers) unless @headers.nil?
         @datum.each { |row| csv << CSV.generate_line(row) }
       end
     else
       CSV.generate(@options) do |csv|
-        csv << @headers unless @headers.nil?
         @datum.each { |row| csv << row }
       end
     end

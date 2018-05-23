@@ -4,6 +4,16 @@ class ActiveReport::Base
 
   @@evaluate = false
 
+  def initialize(datum, opts = {})
+    @datum = datum
+    @model = opts[:model]
+    @only = munge(opts[:only])
+    @except = munge(opts[:except])
+    @headers = opts[:headers]
+    @options = csv_options.merge(opts[:options] || {})
+    @stream = opts[:stream] || false
+  end
+
   def csv_options
     ActiveReport.configuration.csv_options
   end
@@ -23,6 +33,16 @@ class ActiveReport::Base
   def self.evaluate(value = true)
     @@evaluate = value
     self
+  end
+
+  def self.export(datum, opts = {})
+    klass = new(datum, opts)
+    klass.export
+  end
+
+  def self.import(datum, opts = {})
+    klass = new(datum, opts)
+    klass.import
   end
 
   private

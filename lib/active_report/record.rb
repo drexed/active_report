@@ -7,28 +7,6 @@ require 'json'
 
 class ActiveReport::Record < ActiveReport::Base
 
-  # rubocop:disable Metrics/LineLength
-  def initialize(datum, model: nil, only: nil, except: nil, headers: nil, options: {}, stream: false)
-    @datum = datum
-    @model = model
-    @only = munge(only)
-    @except = munge(except)
-    @headers = headers
-    @options = csv_options.merge(options)
-    @stream = stream
-  end
-
-  def self.export(datum, only: nil, except: nil, headers: nil, options: {}, stream: false)
-    klass = new(datum, only: only, except: except, headers: headers, options: options, stream: stream)
-    klass.export
-  end
-  # rubocop:enable Metrics/LineLength
-
-  def self.import(datum, only: nil, except: nil, headers: nil, options: {}, model: nil)
-    klass = new(datum, only: only, except: except, headers: headers, options: options, model: model)
-    klass.import
-  end
-
   def export
     @datum = if @datum.is_a?(ActiveRecord::Relation)
                JSON.parse(@datum.to_json).flatten

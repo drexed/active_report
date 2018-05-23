@@ -2,27 +2,6 @@
 
 class ActiveReport::Hash < ActiveReport::Base
 
-  def initialize(datum, only: nil, except: nil, headers: nil, options: {}, stream: false)
-    @datum = datum
-    @only = munge(only)
-    @except = munge(except)
-    @headers = headers
-    @options = csv_options.merge(options)
-    @stream = stream
-  end
-
-  # rubocop:disable Metrics/LineLength
-  def self.export(datum, only: nil, except: nil, headers: nil, options: {}, stream: false)
-    klass = new(datum, only: only, except: except, headers: headers, options: options, stream: stream)
-    klass.export
-  end
-  # rubocop:enable Metrics/LineLength
-
-  def self.import(datum, only: nil, except: nil, headers: nil, options: {})
-    klass = new(datum, only: only, except: except, headers: headers, options: options)
-    klass.import
-  end
-
   def export
     @datum = munge(@datum)
     @headers = (@headers || filter_humanize_keys(@datum))
