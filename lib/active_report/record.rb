@@ -44,8 +44,8 @@ class ActiveReport::Record < ActiveReport::Base
 
     if @stream == true
       Enumerator.new do |csv|
-        csv << @headers
-        @data.each { |row| csv << filter_values(row) }
+        csv << CSV.generate_line(@headers)
+        @data.each { |row| csv << CSV.generate_line(filter_values(row)) }
       end
     else
       CSV.generate(@options) do |csv|

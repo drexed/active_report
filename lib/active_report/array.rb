@@ -24,8 +24,8 @@ class ActiveReport::Array < ActiveReport::Base
 
     if @stream == true
       Enumerator.new do |csv|
-        csv << @headers unless @headers.nil?
-        @datum.each { |row| csv << row }
+        csv << CSV.generate_line(@headers) unless @headers.nil?
+        @datum.each { |row| csv << CSV.generate_line(row) }
       end
     else
       CSV.generate(@options) do |csv|
