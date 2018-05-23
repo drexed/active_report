@@ -34,6 +34,17 @@ describe ActiveReport::Record do
     end
   end
 
+  context 'dump to csv all data for an' do
+    it 'array of records' do
+      hash_type_2.each { |v| Car.create!(v) }
+
+      sarr = File.read(multi_dump_path)
+      ccsv = ActiveReport::Record.dump(Car.where(speed: 235..245))
+
+      expect(ccsv).to eq(sarr)
+    end
+  end
+
   context 'export to csv all data for an' do
     it 'array of records' do
       hash_type_2.each { |v| Car.create!(v) }

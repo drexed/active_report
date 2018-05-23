@@ -7,6 +7,33 @@ require 'json'
 
 class ActiveReport::Record < ActiveReport::Base
 
+  def self.dump(datum, opts = {})
+    klass = new(datum, opts)
+    klass.dump
+  end
+
+  def dump
+    @opts[:headers] = (@opts[:headers] || @datum.column_names.map { |col| humanize(col) })
+
+    if @opts[:stream] == true
+      Enumerator.new do |csv|
+        csv << CSV.generate_line(@opts[:headers])
+
+        @datum.find_each do |row|
+          csv << CSV.generate_line(filter_values(row.attributes))
+        end
+      end
+    else
+      CSV.generate(@opts[:options]) do |csv|
+        csv << @opts[:headers]
+
+        @datum.find_each do |row|
+          csv << filter_values(row.attributes)
+        end
+      end
+    end
+  end
+
   def export
     @datum = if @datum.is_a?(ActiveRecord::Relation)
                JSON.parse(@datum.to_json).flatten

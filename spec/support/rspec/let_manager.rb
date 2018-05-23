@@ -9,6 +9,7 @@ module LetManager
   let(:multi_options_path) { 'spec/support/csv/multi_options.csv' }
   let(:multi_except_path) { 'spec/support/csv/multi_except.csv' }
   let(:multi_only_path) { 'spec/support/csv/multi_only.csv' }
+  let(:multi_dump_path) { 'spec/support/csv/multi_dump.csv' }
   let(:multi_all_path) { 'spec/support/csv/multi_all.csv' }
 
   let(:solo_headerless_options_path) { 'spec/support/csv/solo_headerless_options.csv' }
