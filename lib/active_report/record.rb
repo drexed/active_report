@@ -54,29 +54,35 @@ class ActiveReport::Record < ActiveReport::Base
   private
 
   def export_csv
+    @data = @data.result if @data.is_a?(Ransack::Search)
+
     CSV.generate(@opts[:options]) do |csv|
       csv << @opts[:headers]
-
-      @data.find_each(start: @opts[:start],
-                      finish: @opts[:finish],
-                      batch_size: @opts[:batch_size],
-                      error_on_ignore: @opts[:error_on_ignore]) do |row|
+      @data.find_each(find_each_options) do |row|
         csv << filter_values(row.attributes)
       end
     end
   end
 
   def export_stream
+    @data = @data.result if @data.is_a?(Ransack::Search)
+
     Enumerator.new do |csv|
       csv << CSV.generate_line(@opts[:headers])
 
-      @data.find_each(start: @opts[:start],
-                      finish: @opts[:finish],
-                      batch_size: @opts[:batch_size],
-                      error_on_ignore: @opts[:error_on_ignore]) do |row|
+      @data.find_each(find_each_options) do |row|
         csv << CSV.generate_line(filter_values(row.attributes))
       end
     end
+  end
+
+  def find_each_options
+    {
+      start: @opts[:start],
+      finish: @opts[:finish],
+      batch_size: @opts[:batch_size],
+      error_on_ignore: @opts[:error_on_ignore]
+    }
   end
 
 end
