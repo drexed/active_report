@@ -11,7 +11,7 @@ class ActiveReport::Record < ActiveReport::Base
     %i[except only].each { |key| @opts[key] = @opts[key].map(&:to_s) }
 
     if active_record_table_class?(@data)
-      @opts[:headers] = (@opts[:headers] || humanize_values(@data.column_names))
+      @opts[:headers] = (@opts[:headers] || humanize_values(active_record_column_names(@data)))
 
       @opts[:stream] ? export_stream : export_csv
     else

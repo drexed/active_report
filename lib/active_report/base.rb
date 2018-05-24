@@ -55,6 +55,11 @@ class ActiveReport::Base
     object.respond_to?(:table_name) || object.is_a?(Ransack::Search)
   end
 
+  def active_record_column_names(object)
+    return object.klass.column_names if object.is_a?(Ransack::Search)
+    object.column_names
+  end
+
   def encode_to_utf8(line)
     line.map do |chr|
       next if chr.nil?
