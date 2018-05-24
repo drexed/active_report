@@ -52,7 +52,7 @@ class ActiveReport::Base
 
   def active_record_table_class?(object)
     return if object.nil? || object.is_a?(ActiveRecord::Relation)
-    object.respond_to?(:table_name)
+    object.respond_to?(:table_name) || object.is_a?(Ransack::Search)
   end
 
   def encode_to_utf8(line)
