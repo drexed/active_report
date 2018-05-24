@@ -25,7 +25,7 @@ describe ActiveReport::Record do
   end
 
   context 'export stream' do
-    it 'returns true' do
+    it 'returns true for query class' do
       Car.create!(hash_type_1)
 
       ccsv = ActiveReport::Record.export(Car.all, stream: true)
@@ -35,7 +35,16 @@ describe ActiveReport::Record do
   end
 
   context 'export to csv all data for an' do
-    it 'array of records from a dump' do
+    it 'array of records from a Class dump' do
+      hash_type_2.each { |v| Car.create!(v) }
+
+      sarr = File.read(multi_all_path)
+      ccsv = ActiveReport::Record.export(Car)
+
+      expect(ccsv).to eq(sarr)
+    end
+
+    it 'array of records from a ActiveRelation dump' do
       hash_type_2.each { |v| Car.create!(v) }
 
       sarr = File.read(multi_dump_path)

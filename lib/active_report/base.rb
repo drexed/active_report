@@ -9,7 +9,7 @@ class ActiveReport::Base
     @opts = opts
 
     %i[except only].each { |key| @opts[key] = munge(@opts[key]) }
-    @opts[:options] ||= csv_options
+    { batch_size: 1_000, options: csv_options }.each { |key, val| @opts[key] ||= val }
   end
 
   def csv_options
@@ -44,6 +44,16 @@ class ActiveReport::Base
   end
 
   private
+
+  def active_record_table_object?(object)
+    return if object.nil?
+    !object.respond_to?(:table_name)
+  end
+
+  def active_record_table_class?(object)
+    return if object.nil? || object.is_a?(ActiveRecord::Relation)
+    object.respond_to?(:table_name)
+  end
 
   def encode_to_utf8(line)
     line.map do |chr|

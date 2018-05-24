@@ -7,11 +7,10 @@ require 'json'
 
 class ActiveReport::Record < ActiveReport::Base
 
-  # rubocop:disable Metrics/PerceivedComplexity
   def export
     %i[except only].each { |key| @opts[key] = @opts[key].map(&:to_s) }
 
-    if !@data.is_a?(ActiveRecord::Relation) && @data.try(:superclass) == ActiveRecord::Base
+    if active_record_table_class?(@data)
       @opts[:headers] = (@opts[:headers] || humanize_values(@data.column_names))
 
       @opts[:stream] ? export_stream : export_csv
@@ -25,10 +24,9 @@ class ActiveReport::Record < ActiveReport::Base
       ActiveReport::Hash.export(@data, @opts)
     end
   end
-  # rubocop:enable Metrics/PerceivedComplexity
 
   def import
-    if @opts[:model].nil? || (@opts[:model].superclass != ActiveRecord::Base)
+    if active_record_table_object?(@opts[:model])
       raise ArgumentError,
             'Model must be an ActiveRecord::Base object.'
     end
@@ -59,7 +57,10 @@ class ActiveReport::Record < ActiveReport::Base
     CSV.generate(@opts[:options]) do |csv|
       csv << @opts[:headers]
 
-      @data.find_each do |row|
+      @data.find_each(start: @opts[:start],
+                      finish: @opts[:finish],
+                      batch_size: @opts[:batch_size],
+                      error_on_ignore: @opts[:error_on_ignore]) do |row|
         csv << filter_values(row.attributes)
       end
     end
@@ -69,7 +70,10 @@ class ActiveReport::Record < ActiveReport::Base
     Enumerator.new do |csv|
       csv << CSV.generate_line(@opts[:headers])
 
-      @data.find_each do |row|
+      @data.find_each(start: @opts[:start],
+                      finish: @opts[:finish],
+                      batch_size: @opts[:batch_size],
+                      error_on_ignore: @opts[:error_on_ignore]) do |row|
         csv << CSV.generate_line(filter_values(row.attributes))
       end
     end
