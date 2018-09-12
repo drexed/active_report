@@ -47,16 +47,19 @@ class ActiveReport::Base
 
   def active_record_table_object?(object)
     return if object.nil?
+
     !object.respond_to?(:table_name)
   end
 
   def active_record_table_class?(object)
     return if object.nil? || object.is_a?(ActiveRecord::Relation)
+
     object.respond_to?(:table_name) || object.is_a?(Ransack::Search)
   end
 
   def active_record_column_names(object)
     return object.klass.column_names if object.is_a?(Ransack::Search)
+
     object.column_names
   end
 
@@ -131,6 +134,7 @@ class ActiveReport::Base
 
   def metatransform(data)
     return if data.empty?
+
     evaluate? ? metamorph(data) : data
   end
 
