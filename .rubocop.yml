@@ -10,6 +10,8 @@ Layout/EmptyLinesAroundModuleBody:
   Enabled: false
 LineLength:
   Max: 100
+Lint/RescueException:
+  Enabled: false
 Metrics/AbcSize:
   Enabled: false
 Metrics/ClassLength:
