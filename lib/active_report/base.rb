@@ -100,13 +100,13 @@ class ActiveReport::Base
     [object].compact
   end
 
-  # rubocop:disable Security/Eval, Lint/RescueException
+  # rubocop:disable Security/Eval
   def metaform(value)
     eval(value.to_s)
   rescue Exception
     value
   end
-  # rubocop:enable Security/Eval, Lint/RescueException
+  # rubocop:enable Security/Eval
 
   def metaform_array(data)
     data.map { |val| metaform(val) }
