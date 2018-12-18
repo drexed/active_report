@@ -52,15 +52,19 @@ class ActiveReport::Base
   end
 
   def active_record_table_class?(object)
-    return if object.nil? || object.is_a?(ActiveRecord::Relation)
+    return if object.nil? || active_relation_object?(object)
 
-    object.respond_to?(:table_name) || object.is_a?(Ransack::Search)
+    object.respond_to?(:table_name) || ransack_object?(object)
   end
 
   def active_record_column_names(object)
-    return object.klass.column_names if object.is_a?(Ransack::Search)
+    return object.klass.column_names if ransack_object?(object)
 
     object.column_names
+  end
+
+  def active_relation_object?(object)
+    object.is_a?(ActiveRecord::Relation)
   end
 
   def encode_to_utf8(line)
@@ -86,6 +90,14 @@ class ActiveReport::Base
     else
       object.keep_if { |key, _| @opts[:only].include?(key) }
     end
+  end
+
+  def filter_values(data)
+    filter(data).values
+  end
+
+  def filter_humanize_keys(data)
+    filter(data.first).collect { |key, _| humanize(key) }
   end
 
   def humanize(object)
@@ -146,12 +158,10 @@ class ActiveReport::Base
     data.first.is_a?(Array) ? data : merge(data)
   end
 
-  def filter_values(data)
-    filter(data).values
-  end
+  def ransack_object?(object)
+    return false unless defined?(::Ransack)
 
-  def filter_humanize_keys(data)
-    filter(data.first).collect { |key, _| humanize(key) }
+    object.is_a?(::Ransack::Search)
   end
 
 end

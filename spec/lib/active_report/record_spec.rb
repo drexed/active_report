@@ -198,7 +198,6 @@ describe ActiveReport::Record do
 
   context 'import csv only values to create' do
     it '3 cars' do
-      sarr = hash_type_4.dup.map { |v| v.dup.keep_if { |k,v| [:name].include?(k) } }
       ActiveReport::Record.import(multi_headerless_path,
                                   model: Car,
                                   headers: header_type_1,
@@ -208,7 +207,6 @@ describe ActiveReport::Record do
     end
 
     it '1 car' do
-      sarr = hash_type_3.dup.keep_if { |k,v| [:name].include?(k) }
       ActiveReport::Record.import(solo_headerless_path,
                                   model: Car,
                                   headers: header_type_1,
@@ -220,7 +218,6 @@ describe ActiveReport::Record do
 
   context 'import csv except values to create' do
     it '3 cars' do
-      sarr = hash_type_2.dup.map { |v| v.dup.delete_if { |k,v| [:name].include?(k) } }
       ActiveReport::Record.import(multi_headerless_path,
                                   model: Car,
                                   headers: header_type_1,
@@ -230,7 +227,6 @@ describe ActiveReport::Record do
     end
 
     it '1 car' do
-      sarr = hash_type_1.dup.delete_if { |k,v| [:name].include?(k) }
       ActiveReport::Record.import(solo_headerless_path,
                                   model: Car,
                                   headers: header_type_1,

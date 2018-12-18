@@ -2,7 +2,13 @@
 
 require 'activerecord-import'
 require 'activerecord-import/base'
-require "activerecord-import/active_record/adapters/#{ActiveReport.configuration.import_adapter}"
+
+begin
+  require "activerecord-import/active_record/adapters/#{ActiveReport.configuration.import_adapter}"
+rescue Gem::LoadError
+  require 'activerecord-import/active_record/adapters/sqlite3_adapter'
+end
+
 require 'json'
 
 class ActiveReport::Record < ActiveReport::Base
@@ -12,10 +18,9 @@ class ActiveReport::Record < ActiveReport::Base
 
     if active_record_table_class?(@data)
       @opts[:headers] = (@opts[:headers] || humanize_values(active_record_column_names(@data)))
-
       @opts[:stream] ? export_stream : export_csv
     else
-      @data = if @data.is_a?(ActiveRecord::Relation)
+      @data = if active_relation_object?(@data)
                 JSON.parse(@data.to_json).flatten
               else
                 merge(@data.attributes)
@@ -54,10 +59,11 @@ class ActiveReport::Record < ActiveReport::Base
   private
 
   def export_csv
-    @data = @data.result if @data.is_a?(Ransack::Search)
+    @data = @data.result if ransack_object?(@data)
 
     CSV.generate(@opts[:options]) do |csv|
       csv << @opts[:headers]
+
       @data.find_each(find_each_options) do |row|
         csv << filter_values(row.attributes)
       end
@@ -65,7 +71,7 @@ class ActiveReport::Record < ActiveReport::Base
   end
 
   def export_stream
-    @data = @data.result if @data.is_a?(Ransack::Search)
+    @data = @data.result if ransack_object?(@data)
 
     Enumerator.new do |csv|
       csv << CSV.generate_line(@opts[:headers])
