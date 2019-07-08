@@ -3,6 +3,8 @@
 [![Gem Version](https://badge.fury.io/rb/active_report.svg)](http://badge.fury.io/rb/active_report)
 [![Build Status](https://travis-ci.org/drexed/active_report.svg?branch=master)](https://travis-ci.org/drexed/active_report)
 
+**NOTE** ActiveReport has been deprecated in favor of [Lite::Report](https://github.com/drexed/lite-report). Its NOT a drop-in replacement, so please read the docs and make the switch as soon as possible.
+
 ActiveReport is a library to export CSV's out of arrays, hashes, and records and vice versa.
 
 ## Installation
